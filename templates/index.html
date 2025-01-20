@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>باحث الصغير</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-2 py-8">
+      <h1 class="text-3xl font-bold mb-8 text-right">باحث الصغير</h1>
+      <div class="rounded-lg shadow p-4">
+        <div class="space-y-4">
+          <div>
+            <label for="directory" class="block text-sm font-medium text-gray-700 text-right">المسار</label>
+            <select id="directory" name="directory" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right"> {% for dir in directories %} <option value="{{ dir }}">{{ dir }}</option> {% endfor %} </select>
+          </div>
+          <div>
+            <label for="file_filter" class="block text-sm font-medium text-gray-700 text-right">نوع الملف</label>
+            <select id="file_filter" name="file_filter" class="my-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right">
+              <option value="*.txt">txt</option>
+              <option value="*.csv">csv</option>
+              <option value="*.doc">doc</option>
+              <option value="*.docx">docx</option>
+              <option value="*.json">json</option>
+              <option value="*.md">md</option>
+            </select>
+          </div>
+          <div>
+            <label for="query" class="block text-sm font-medium text-gray-700 text-right">عبارة البحث</label>
+            <input type="text" id="query" name="query" dir="auto" class="my-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right" hx-get="/api/search" hx-trigger="keyup changed delay:500ms, search" hx-include="#directory,#file_filter" hx-target="#results-container" placeholder="ابحث عن شيء ما" />
+          </div>
+        </div>
+        <div id="results-container">
+          <div id="results" class="mt-8 space-y-4">
+            <!-- Results will be loaded here -->
+          </div>
+          <div id="scroll-observer" class="h-4"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        let currentIndex = 0;
+        const resultsPerPage = 10;
+        let allResults = [];
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && allResults.length > currentIndex) {
+              loadMoreResults();
+            }
+          });
+        });
+        observer.observe(document.querySelector('#scroll-observer'));
+
+        function createResultElement(result) {
+          const div = document.createElement('div');
+          if (!result?.highlighted_text) return div;
+          div.className = 'p-4 rounded-lg shadow';
+          div.innerHTML = `
+            <div dir="auto" class="flex items-center gap-2 text-sm text-gray-600">
+              <span>${result.path}</span>
+              <span class="text-gray-400">:</span>
+              <span>${result.line_number}</span>
+            </div>
+            <div dir="auto" class="flex flex-col gap-1 bg-gray-50 mt-2 rounded p-2 overflow-x-auto">
+              <span class="text-gray-500">${result.context_before}</span>
+              <span>${result.highlighted_text}</span>
+              <span class="text-gray-500">${result.context_after}</span>
+            </div>
+          `;
+          return div;
+        }
+
+        function loadMoreResults() {
+          const resultsContainer = document.querySelector('#results');
+          const batch = allResults.slice(currentIndex, currentIndex + resultsPerPage);
+          if (batch.length) {
+            batch.forEach(result => {
+              resultsContainer.appendChild(createResultElement(result));
+            });
+            currentIndex += resultsPerPage;
+          }
+        }
+        document.body.addEventListener('htmx:beforeOnLoad', function(evt) {
+          const response = evt.detail.xhr.response;
+          // Parse JSON Lines format
+          allResults = response.trim().split('\n').filter(line => line.trim()) // Remove empty lines
+            .map(line => JSON.parse(line));
+          currentIndex = 0;
+          document.querySelector('#results').innerHTML = '';
+          loadMoreResults();
+          evt.preventDefault();
+        });
+      });
+    </script>
+  </body>
+</html>

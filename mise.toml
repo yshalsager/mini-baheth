@@ -1,0 +1,20 @@
+[tools]
+python = "3.13"
+uv = 'latest'
+
+[tasks.dev]
+alias = 'default'
+run = 'uv run nanodjango run app.py $API_HOST:$API_PORT'
+
+[tasks.prod]
+run = 'uv run nanodjango serve app.py $API_HOST:$API_PORT'
+
+[env]
+API_HOST = '127.0.0.1'
+API_PORT = 5000
+API_WORKERS = 4
+
+# Django
+ALLOWED_HOSTS = 'localhost 127.0.0.1 [::1]'
+
+_.file = '.env'

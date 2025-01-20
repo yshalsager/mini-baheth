@@ -1,0 +1,16 @@
+[project]
+name = "mini-baheth"
+version = "0.1.0"
+description = "Ripgrep Web UI"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "nanodjango>=0.9.2",
+    "orjson>=3.10.15",
+    "uvicorn>=0.34.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.2",
+]
