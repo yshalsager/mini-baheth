@@ -5,9 +5,10 @@ description = "Ripgrep Web UI"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "granian[reload]>=1.7.5",
     "nanodjango>=0.9.2",
     "orjson>=3.10.15",
-    "uvicorn>=0.34.0",
+    "uvloop>=0.21.0",
 ]
 
 [dependency-groups]

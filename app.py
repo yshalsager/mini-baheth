@@ -1,7 +1,6 @@
 # /// script
-# dependencies = ["nanodjango", "orjson", "uvicorn"]
+# dependencies = ["nanodjango", "orjson", "granian", "uvloop"]
 # ///
-#
 import asyncio
 from pathlib import Path
 

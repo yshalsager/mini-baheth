@@ -4,10 +4,10 @@ uv = 'latest'
 
 [tasks.dev]
 alias = 'default'
-run = 'uv run nanodjango run app.py $API_HOST:$API_PORT'
+run = 'uv run granian --interface asginl --host $API_HOST --port $API_PORT --workers $API_WORKERS --reload app:app.asgi_dev'
 
 [tasks.prod]
-run = 'uv run nanodjango serve app.py $API_HOST:$API_PORT'
+run = 'uv run granian --interface asginl --host $API_HOST --port $API_PORT --workers $API_WORKERS app:app.asgi'
 
 [env]
 API_HOST = '127.0.0.1'
