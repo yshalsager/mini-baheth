@@ -2,10 +2,11 @@
 # dependencies = ["nanodjango", "orjson", "granian", "uvloop"]
 # ///
 import asyncio
+import logging
 from pathlib import Path
 
 import orjson
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import StreamingHttpResponse
 from django.shortcuts import render
 from nanodjango import Django
 
@@ -27,6 +28,94 @@ app = Django(
     ]
 )
 data_dir = wdir / "data"
+
+
+class ResultStreamProcessor:
+    def __init__(self, cmd, data_dir):
+        self.cmd = cmd
+        self.data_dir = data_dir
+        self.previous_match = None
+        self.context_before = ""
+        self.proc = None
+
+    async def process_match(self, result):
+        data = result.get("data", {})
+        return {
+            "path": data.get("path", {}).get("text", ""),
+            "line_number": data.get("line_number", 0),
+            "lines": data.get("lines", {}).get("text", ""),
+            "submatches": data.get("submatches", []),
+            "context_before": "",
+            "context_after": "",
+            "highlighted_text": highlight_matches(
+                data.get("lines", {}).get("text", ""), data.get("submatches", [])
+            ),
+        }
+
+    def handle_context(self, result):
+        if self.previous_match:
+            data = result.get("data", {})
+            self.previous_match["context_after"] = (
+                data.get("lines", {}).get("text", "").strip()
+            )
+            return True
+        else:
+            self.context_before = (
+                result.get("data", {}).get("lines", {}).get("text", "").strip()
+            )
+            return False
+
+    async def stream_results(self):
+        try:
+            self.proc = await asyncio.create_subprocess_exec(
+                *self.cmd,
+                cwd=self.data_dir,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+
+            async for line in self.proc.stdout:
+                try:
+                    result = orjson.loads(line.decode())
+
+                    if result.get("type") == "match":
+                        result_data = await self.process_match(result)
+                        if self.context_before:
+                            result_data["context_before"] = self.context_before
+                            self.context_before = ""
+
+                        if self.previous_match:
+                            yield f"data: {orjson.dumps(self.previous_match).decode()}\n\n"
+                        else:
+                            self.previous_match = result_data
+
+                    elif result.get("type") == "context":
+                        if self.handle_context(result):
+                            yield f"data: {orjson.dumps(self.previous_match).decode()}\n\n"
+                            self.previous_match = None
+
+                except orjson.JSONDecodeError as e:
+                    logging.error(f"JSON decode error: {e}")
+                    continue
+                except Exception as e:
+                    logging.error(f"Error processing line: {e}")
+                    continue
+
+            if self.previous_match:
+                yield f"data: {orjson.dumps(self.previous_match).decode()}\n\n"
+
+            yield f"data: {orjson.dumps({'complete': True}).decode()}\n\n"
+
+        except Exception as e:
+            logging.error(f"Stream processing error: {e}")
+            yield f"data: {orjson.dumps({'error': str(e)}).decode()}\n\n"
+        finally:
+            if self.proc:
+                try:
+                    await asyncio.wait_for(self.proc.wait(), timeout=5.0)
+                except asyncio.TimeoutError:
+                    self.proc.terminate()
+                    await self.proc.wait()
 
 
 def highlight_matches(text: str, submatches: list[dict[str, int]]) -> str:
@@ -54,7 +143,9 @@ def index(request):
 
 
 @app.api.get("/search")
-async def search(request: HttpResponse, query: str, directory: str, file_filter: str):
+async def search(
+    request: StreamingHttpResponse, query: str, directory: str, file_filter: str
+):
     if not query:
         return ""
 
@@ -78,60 +169,10 @@ async def search(request: HttpResponse, query: str, directory: str, file_filter:
         else:
             cmd.extend(["-g", f"{file_filter}"])
     cmd.append(query)
-
-    async def stream_results():
-        try:
-            proc = await asyncio.create_subprocess_exec(
-                *cmd,
-                cwd=data_dir,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            previous_match = ""
-            async for line in proc.stdout:
-                try:
-                    result = orjson.loads(line.decode())
-                    if result.get("type") == "match":
-                        data = result.get("data", {})
-                        result_data = {
-                            "path": data.get("path", {}).get("text", ""),
-                            "line_number": data.get("line_number", 0),
-                            "lines": data.get("lines", {}).get("text", ""),
-                            "submatches": data.get("submatches", []),
-                            "context_before": "",
-                            "context_after": "",
-                        }
-                        result_data["highlighted_text"] = highlight_matches(
-                            result_data["lines"], result_data["submatches"]
-                        )
-                    elif result.get("type") == "context":
-                        if previous_match:
-                            data = result.get("data", {})
-                            previous_match["context_after"] = data.get("lines", {}).get(
-                                "text", ""
-                            ).strip()
-                            yield orjson.dumps(previous_match).decode() + "\n"
-                            previous_match = None
-                        else:
-                            context_before = (
-                                result.get("data", {}).get("lines", {}).get("text", "").strip()
-                            )
-                            continue
-
-                    if result.get("type") == "match":
-                        if context_before:
-                            result_data["context_before"] = context_before
-                            context_before = ""
-                        previous_match = result_data
-
-                except orjson.JSONDecodeError:
-                    continue
-            await proc.wait()
-
-        except Exception as e:
-            yield f"<p class='text-red-500'>Error: {str(e)}</p>"
-
-    return StreamingHttpResponse(stream_results(), content_type="text/html")
+    processor = ResultStreamProcessor(cmd, data_dir)
+    return StreamingHttpResponse(
+        processor.stream_results(), content_type="text/event-stream"
+    )
 
 
 if __name__ == "__main__":
