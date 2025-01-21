@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 
 import orjson
-from django.http import StreamingHttpResponse
+from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.shortcuts import render
 from nanodjango import Django
 
@@ -118,9 +118,7 @@ class ResultStreamProcessor:
                     await self.proc.wait()
 
 
-def highlight_matches(
-    text: str, submatches: list[dict[str, dict[str, str]]]
-) -> str:
+def highlight_matches(text: str, submatches: list[dict[str, dict[str, str]]]) -> str:
     """Helper function to highlight matched text with HTML"""
     for i in submatches:
         text = text.replace(
@@ -169,6 +167,26 @@ async def search(
     processor = ResultStreamProcessor(cmd, data_dir)
     return StreamingHttpResponse(
         processor.stream_results(), content_type="text/event-stream"
+    )
+
+
+@app.api.get("/file")
+def file(
+    request: HttpRequest, file: str, line_number: int | None = None
+) -> HttpResponse:
+    if not file:
+        return HttpResponse(status=400)
+    path = data_dir / file
+    if not path.exists():
+        return HttpResponse(status=404)
+    return render(
+        request,
+        "file_modal.html",
+        {
+            "file": path.relative_to(data_dir),
+            "lines": path.read_text().splitlines(),
+            "line_number": line_number,
+        },
     )
 
 

@@ -40,6 +40,7 @@
           <div id="scroll-observer" class="h-4"></div>
         </div>
       </div>
+      <div id="file-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" hx-target="this" hx-swap="outerHTML"></div>
     </div>
     <script>
       function debounce(func, wait) {
@@ -73,18 +74,29 @@
           const div = document.createElement('div');
           if (!result?.highlighted_text) return div;
           div.className = 'p-4 rounded-lg shadow';
-          div.innerHTML = `
-            <div dir="auto" class="flex items-center gap-2 text-sm text-gray-600">
-              <span>${result.path}</span>
-              <span class="text-gray-400">:</span>
-              <span>${result.line_number}</span>
-            </div>
+          const pathSpan = document.createElement('span');
+          pathSpan.textContent = result.path;
+          pathSpan.classList.add("cursor-pointer", "text-blue-500", "hover:underline");
+          pathSpan.addEventListener('click', () => htmx.ajax('GET', `/api/file?file=${encodeURIComponent(result.path)}`, '#file-modal'));
+          const lineNumberSpan = document.createElement('span');
+          lineNumberSpan.textContent = result.line_number;
+          lineNumberSpan.classList.add("cursor-pointer", "text-blue-500", "hover:underline");
+          lineNumberSpan.addEventListener('click', () => htmx.ajax('GET', `/api/file?line_number=${result.line_number}&file=${encodeURIComponent(result.path)}`, '#file-modal'));
+        
+          const lineInfoDiv = document.createElement('div');
+          lineInfoDiv.dir = "auto";
+          lineInfoDiv.className = "flex items-center gap-2 text-sm text-gray-600";
+          lineInfoDiv.appendChild(pathSpan);
+          lineInfoDiv.appendChild(document.createTextNode(": "));
+          lineInfoDiv.appendChild(lineNumberSpan);
+          div.appendChild(lineInfoDiv);
+          div.insertAdjacentHTML('beforeend', `
             <div dir="auto" class="flex flex-col gap-1 bg-gray-50 mt-2 rounded p-2 overflow-x-auto">
               <span class="text-gray-500">${result.context_before}</span>
               <span>${result.highlighted_text}</span>
               <span class="text-gray-500">${result.context_after}</span>
             </div>
-          `;
+          `);
           return div;
         }
 
@@ -153,6 +165,30 @@
         document.getElementById('file_filter').addEventListener('change', performSearch);
       
         if (document.getElementById('query').value) performSearch();
+      });
+
+      document.body.addEventListener('htmx:afterSwap', (event) => {
+        if (event.detail.target.id === 'file-modal') {
+          const modal = document.getElementById('file-modal');
+          modal.classList.remove('hidden');
+    
+          const closeModalButton = modal.querySelector('#close-modal');
+          closeModalButton.addEventListener('click', () => {
+            modal.classList.add('hidden');
+          });
+    
+          modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+              modal.classList.add('hidden');
+            }
+          });
+    
+          const lineNumber = new URLSearchParams(window.location.search).get('line');
+          const lineElement = modal.querySelector(`.line[data-line-number="${lineNumber}"`);
+          setTimeout(() => {
+            if (lineElement) lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }, 500);
+        }
       });
     </script>
   </body>
