@@ -61,9 +61,10 @@
         let currentIndex = 0;
         const resultsPerPage = 10;
         let allResults = [];
+        let isLoading = false;
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
-            if (entry.isIntersecting && allResults.length > currentIndex) {
+            if (entry.isIntersecting && allResults.length > currentIndex && !isLoading) {
               loadMoreResults();
             }
           });
@@ -101,19 +102,20 @@
         }
 
         function loadMoreResults() {
+          isLoading = true;
           const batch = allResults.slice(currentIndex, currentIndex + resultsPerPage);
-          if (batch.length) {
-            batch.forEach(result => {
+          batch.forEach(result => {
               resultsContainer.appendChild(createResultElement(result));
-            });
-            currentIndex += resultsPerPage;
-          }
+          });
+          currentIndex += resultsPerPage;
+          isLoading = false;
         }
-      
+
         function performSearch() {
           if (source) source.close();
           allResults = [];
           currentIndex = 0;
+          isLoading = false;
           resultsContainer.innerHTML = '';
       
           const query = document.getElementById('query').value;
@@ -131,6 +133,7 @@
               
               if (result.complete) {
                 source.close();
+                if (currentIndex < allResults.length) loadMoreResults();
                 return;
               }
       
