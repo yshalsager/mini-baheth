@@ -118,19 +118,16 @@ class ResultStreamProcessor:
                     await self.proc.wait()
 
 
-def highlight_matches(text: str, submatches: list[dict[str, int]]) -> str:
+def highlight_matches(
+    text: str, submatches: list[dict[str, dict[str, str]]]
+) -> str:
     """Helper function to highlight matched text with HTML"""
-    result = []
-    last_end = 0
-
-    for match in sorted(submatches, key=lambda x: x["start"]):
-        start, end = match["start"], match["end"]
-        result.append(text[last_end:start])
-        result.append(f'<span class="bg-yellow-200">{text[start:end]}</span>')
-        last_end = end
-
-    result.append(text[last_end:])
-    return "".join(result).strip()
+    for i in submatches:
+        text = text.replace(
+            i["match"]["text"],
+            f'<span class="bg-yellow-200">{i["match"]["text"]}</span>',
+        )
+    return text.strip()
 
 
 @app.route("/")
