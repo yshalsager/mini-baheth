@@ -181,7 +181,7 @@
           });
     
           modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
+            if (event.target.id === 'file-modal-backdrop') {
               modal.classList.add('hidden');
             }
           });
