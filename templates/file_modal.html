@@ -1,8 +1,8 @@
 <div id="file-modal-backdrop" dir="auto" class="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true">
-  <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full" dir="auto">
+  <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full min-w-[60%]" dir="auto">
     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
       <div class="sm:flex sm:items-start">
-        <div class="mt-3 text-start sm:mt-0 sm:ml-4">
+        <div class="mt-3 text-start sm:mt-0 sm:ml-4 w-full">
           <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">{{ file }}</h3>
           <div class="mt-2" style="max-height: 400px; overflow-y: auto;">
             {% for line in lines %}
