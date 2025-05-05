@@ -12,6 +12,9 @@ wheels/
 # Virtual environments
 .venv
 
+# Docker
+docker-compose.override.yml
+
 # Data
 .env
 data/
