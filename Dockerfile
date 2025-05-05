@@ -7,9 +7,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=ghcr.io/astral-sh/uv:0.7.2 /uv /usr/local/bin/uv
 
-RUN useradd -m appuser && chown -R appuser:appuser /app
+WORKDIR /code
+RUN useradd -m appuser && chown -R appuser:appuser /code
 USER appuser
-    
+
 WORKDIR /code
 COPY pyproject.toml .
 COPY uv.lock .
@@ -19,4 +20,9 @@ ENV PATH="/code/.venv/bin:$PATH"
 
 WORKDIR /code/app
 EXPOSE ${API_PORT:-5000}
-CMD ["granian", "--interface", "asginl", "--host", "0.0.0.0", "--port", "${API_PORT:-5000}", "--workers", "${API_WORKERS:-4}", "app:app"]
+
+# Copy the entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
