@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    # ports: # Ports are often handled by Traefik, so direct mapping might be removed
+      # - "127.0.0.1:5000:5000"
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Africa/Cairo
+      # - API_WORKERS=8
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.minibaheth.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.minibaheth.entrypoints=websecure"
+      - "traefik.http.routers.minibaheth.tls=true"
+      - "traefik.http.routers.minibaheth.tls.certresolver=lets-encrypt" # Use your cert resolver
+      # HTTP Services
+      - "traefik.http.services.minibaheth.loadbalancer.server.port=${API_PORT:-5000}"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
