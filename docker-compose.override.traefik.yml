@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     # ports: # Ports are often handled by Traefik, so direct mapping might be removed

@@ -5,8 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ripgrep \
     && rm -rf /var/lib/apt/lists/*
 
-ARG UV_VERSION=0.7.2
-COPY --from=ghcr.io/astral-sh/uv:${UV_VERSION} /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.7.2 /uv /usr/local/bin/uv
 
 RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
