@@ -186,11 +186,18 @@
             }
           });
     
-          const lineNumber = new URLSearchParams(window.location.search).get('line');
-          const lineElement = modal.querySelector(`.line[data-line-number="${lineNumber}"`);
-          setTimeout(() => {
-            if (lineElement) lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          }, 500);
+          const requestUrl = new URL(event.detail.requestConfig.path, window.location.origin);
+          const lineNumber = requestUrl.searchParams.get('line_number');
+    
+          if (lineNumber) {
+            const lineElement = modal.querySelector(`.line[data-line-number="${lineNumber}"]`);
+            setTimeout(() => {
+              if (lineElement) {
+                lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                lineElement.classList.add('bg-yellow-100');
+              }
+            }, 100);
+          }
         }
       });
     </script>
