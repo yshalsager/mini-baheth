@@ -15,6 +15,7 @@
         <div class="space-y-4">
           <div>
             <label for="directory" class="block text-sm font-medium text-gray-700 text-right">المسار</label>
+            <input type="text" id="directory-search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right" placeholder="ابحث عن مسار...">
             <select id="directory" name="directory" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right"> {% for dir in directories %} <option value="{{ dir }}">{{ dir }}</option> {% endfor %} </select>
           </div>
           <div>
@@ -71,6 +72,29 @@
         });
         observer.observe(document.querySelector('#scroll-observer'));
       
+        const directorySelect = document.getElementById('directory');
+        const directorySearch = document.getElementById('directory-search');
+        const directoryOptions = Array.from(directorySelect.options);
+
+        function filterDirectoryOptions() {
+            const searchTerm = directorySearch.value.toLowerCase();
+            directorySelect.innerHTML = ''; // Clear existing options
+
+            directoryOptions.forEach(option => {
+                if (option.text.toLowerCase().includes(searchTerm)) {
+                    directorySelect.appendChild(option.cloneNode(true));
+                }
+            });
+            // Trigger change event if only one option is left or if the selected value is no longer valid
+            if (directorySelect.options.length === 1 || !directorySelect.querySelector(`option[value="${directorySelect.value}"]`)) {
+                directorySelect.dispatchEvent(new Event('change'));
+            }
+        }
+
+        directorySearch.addEventListener('input', filterDirectoryOptions);
+        // Initial filter in case there's a default search value (though unlikely here)
+        filterDirectoryOptions();
+
         function createResultElement(result) {
           const div = document.createElement('div');
           if (!result?.highlighted_text) return div;
