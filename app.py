@@ -133,7 +133,7 @@ def index(request):
     return render(
         request,
         "index.html",
-        {"directories": [str(p.relative_to(data_dir)) for p in data_dir.glob("**/")]},
+        {"directories": [str(p.relative_to(data_dir)) for p in data_dir.glob("**/", recurse_symlinks=True)]},
     )
 
 
@@ -154,6 +154,7 @@ async def search(
         "--no-ignore-vcs",
         "-C",
         "1",
+        "--follow",
     ]
     if directory:
         cmd.extend(["-g", f"{directory}/**" if directory != "." else "**/"])
