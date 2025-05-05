@@ -175,14 +175,25 @@
           const modal = document.getElementById('file-modal');
           modal.classList.remove('hidden');
     
-          const closeModalButton = modal.querySelector('#close-modal');
-          closeModalButton.addEventListener('click', () => {
+          const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+              closeModal();
+            }
+          };
+
+          const closeModal = () => {
             modal.classList.add('hidden');
-          });
+            document.removeEventListener('keydown', handleEscape);
+          };
+
+          document.addEventListener('keydown', handleEscape);
+
+          const closeModalButton = modal.querySelector('#close-modal');
+          closeModalButton.addEventListener('click', closeModal);
     
           modal.addEventListener('click', (event) => {
             if (event.target.id === 'file-modal-backdrop') {
-              modal.classList.add('hidden');
+              closeModal();
             }
           });
     
