@@ -19,7 +19,7 @@ WORKDIR /code
 COPY pyproject.toml .
 COPY uv.lock .
 
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-group dev
 ENV PATH="/code/.venv/bin:$PATH"
 
 WORKDIR /code/app
