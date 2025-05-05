@@ -9,6 +9,10 @@ COPY --from=ghcr.io/astral-sh/uv:0.7.2 /uv /usr/local/bin/uv
 
 WORKDIR /code
 RUN useradd -m appuser && chown -R appuser:appuser /code
+
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 USER appuser
 
 WORKDIR /code
@@ -20,9 +24,5 @@ ENV PATH="/code/.venv/bin:$PATH"
 
 WORKDIR /code/app
 EXPOSE ${API_PORT:-5000}
-
-# Copy the entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
