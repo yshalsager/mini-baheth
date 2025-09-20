@@ -2,17 +2,18 @@
 python = "3.13"
 uv = 'latest'
 
-[tasks.dev]
+[tasks.default]
 alias = 'default'
-run = 'uv run granian --interface asginl --host $API_HOST --port $API_PORT --workers $API_WORKERS --reload app:app.asgi_dev'
-
-[tasks.prod]
-run = 'uv run granian --interface asginl --host $API_HOST --port $API_PORT --workers $API_WORKERS app:app.asgi'
+run = 'uv run granian app:app.asgi'
 
 [env]
-API_HOST = '127.0.0.1'
-API_PORT = 5000
-API_WORKERS = 2
+# Granian configuration
+GRANIAN_HOST = '127.0.0.1'
+GRANIAN_PORT = 5000
+GRANIAN_WORKERS = 2
+GRANIAN_THREADS = 1
+GRANIAN_INTERFACE = 'asginl'
+GRANIAN_RELOAD = false
 
 # Django
 ALLOWED_HOSTS = 'localhost 127.0.0.1 [::1]'

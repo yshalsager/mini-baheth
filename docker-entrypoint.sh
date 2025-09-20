@@ -1,8 +1,12 @@
 #!/bin/sh
 set -e
 
-API_PORT=${API_PORT:-5000}
-API_WORKERS=${API_WORKERS:-2}
-API_HOST=${API_HOST:-0.0.0.0}
+# Set default values for Granian environment variables if not already set
+export GRANIAN_HOST=${GRANIAN_HOST:-0.0.0.0}
+export GRANIAN_PORT=${GRANIAN_PORT:-5000}
+export GRANIAN_WORKERS=${GRANIAN_WORKERS:-2}
+export GRANIAN_THREADS=${GRANIAN_THREADS:-1}
+export GRANIAN_INTERFACE=${GRANIAN_INTERFACE:-asginl}
+export GRANIAN_RELOAD=${GRANIAN_RELOAD:-false}
 
-exec granian --interface asginl --host "$API_HOST" --port "$API_PORT" --workers "$API_WORKERS" app:app.asgi "$@" 
+exec granian app:app.asgi "$@" 

@@ -42,9 +42,10 @@ Create a .env and fill in the required information as defined in [mise.toml] env
 # Hostname for Traefik (if using the override)
 # TRAEFIK_HOST=baheth.yourdomain.com
 
-# Optional: Override default API port or workers
-# API_PORT=5001
-# API_WORKERS=8
+# Optional: Override default Granian settings
+# GRANIAN_PORT=5001
+# GRANIAN_WORKERS=8
+# GRANIAN_THREADS=4
 ```
 
 3.  **Place your data:**
@@ -76,7 +77,7 @@ docker compose up --build -d
 uv run app.py
 ```
 
-The application should now be accessible at `http://127.0.0.1:5000` (or the `API_PORT` you configured).
+The application should now be accessible at `http://127.0.0.1:5000` (or the `GRANIAN_PORT` you configured).
 
 ## Traefik Integration (Optional)
 
