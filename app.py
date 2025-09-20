@@ -199,11 +199,9 @@ async def search(
     tool = "rga" if file_filter in RGA_FILE_FILTERS else "rg"
     cmd = [which(tool)]
     if tool == "rga":
-        cfg_candidates = [wdir / "rga.config.json", Path("/etc/rga/config.json")]
-        for cfg in cfg_candidates:
-            if cfg.exists():
-                cmd.append(f"--rga-config-file={str(cfg)}")
-                break
+        config_path = wdir / "rga.config.json"
+        if config_path.exists():
+            cmd.append(f"--rga-config-file={str(config_path)}")
 
     cmd.extend(
         [
