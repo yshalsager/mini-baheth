@@ -1,5 +1,5 @@
 # /// script
-# dependencies = ["nanodjango", "orjson", "granian", "uvloop"]
+# dependencies = ["nanodjango", "orjson", "granian", "rloop"]
 # ///
 import asyncio
 import logging
