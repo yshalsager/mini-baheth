@@ -4,6 +4,7 @@ ARG UV_VERSION=0.8.19
 
 # ===== STAGE 1: Build system dependencies =====
 FROM public.ecr.aws/docker/library/python:${PYTHON_VERSION}-slim-trixie AS builder
+ARG RGA_VERSION
 
 # Install system dependencies (ripgrep, antiword, pandoc, gron, curl for downloads)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -21,13 +22,12 @@ RUN set -eux; \
   arch="$(dpkg --print-architecture)"; \
   case "$arch" in \
   amd64) target="x86_64-unknown-linux-musl" ;; \
-  arm64) target="aarch64-unknown-linux-musl" ;; \
+  arm64) target="arm-unknown-linux-gnueabihf" ;; \
   *) echo "unsupported arch: $arch"; exit 1 ;; \
   esac; \
   tmpdir="$(mktemp -d)"; cd "$tmpdir"; \
-  url1="https://github.com/phiresky/ripgrep-all/releases/download/v${RGA_VERSION}/rga-v${RGA_VERSION}-${target}.tar.gz"; \
-  url2="https://github.com/phiresky/ripgrep-all/releases/download/v${RGA_VERSION}/rga-v${RGA_VERSION}-${target}.tar.xz"; \
-  if ! curl -fsSL -o rga.tar "$url1"; then curl -fsSL -o rga.tar "$url2"; fi; \
+  url="https://github.com/phiresky/ripgrep-all/releases/download/v${RGA_VERSION}/ripgrep_all-v${RGA_VERSION}-${target}.tar.gz"; \
+  curl -fsSL -o rga.tar "$url"; \
   tar -xf rga.tar; \
   binpath="$(find . -maxdepth 2 -type f -name rga | head -n1)"; \
   preprocpath="$(find . -maxdepth 2 -type f -name rga-preproc | head -n1 || true)"; \
@@ -69,8 +69,8 @@ COPY pyproject.toml .
 COPY uv.lock .
 
 # Install Python dependencies
-ENV UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1 UV_PYTHON_DOWNLOADS=none
-RUN --mount=type=cache,target=/home/appuser/.cache/uv uv sync --frozen --no-group dev
+ENV UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1 UV_PYTHON_DOWNLOADS=never
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-group dev
 ENV PATH="/code/.venv/bin:$PATH"
 
 WORKDIR /code/app
