@@ -1,6 +1,6 @@
 # Mini Baheth
 
-A simple, self-hosted web UI for searching through text files using `ripgrep`.
+A simple, self-hosted web UI for searching through text files using `ripgrep` and `ripgrep-all`.
 
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
@@ -11,19 +11,23 @@ A simple, self-hosted web UI for searching through text files using `ripgrep`.
 
 ## Features
 
-*   Real-time search results streamed to the UI.
-*   Context lines (before/after) displayed for each match.
-*   Syntax highlighting for matched terms.
-*   Ability to filter searches by directory and file patterns.
-*   Clickable file paths/line numbers to view the full file content in a modal.
-*   Responsive design using Tailwind CSS.
+- Streaming results realtime to the UI.
+- Context lines (before/after) and matching text highlighting.
+- Directory and file-pattern filtering.
+- Fast first paint: only root-level directories initially; fetch more on demand.
+- Modal preview for files; DOCX/DOC are converted to text for readability.
+- `rga` adapters for more formats:
+  - DOCX: via `pandoc` (built-in `rga` adapter)
+  - DOC: via `antiword` ([custom adapter](https://github.com/phiresky/ripgrep-all/discussions/272))
+  - JSON: via `gron` ([custom adapter](https://github.com/phiresky/ripgrep-all/discussions/176)) to flatten keys/values
+ - Responsive design using Tailwind CSS.
 
 ## Technology Stack
 
-*   **Backend:** Python, NanoDjango, Granian (ASGI Server)
-*   **Search:** Ripgrep
-*   **Frontend:** HTML, Tailwind CSS (via CDN), htmx
-*   **Packaging & Runtime:** Docker, uv
+- Backend: Python, NanoDjango, Granian (ASGI Server)
+- Search: ripgrep (rg), ripgrep-all (rga)
+- Frontend: HTML, Tailwind CSS (via CDN), htmx
+- Packaging & Runtime: Docker, uv
 
 ## Setup
 
@@ -50,11 +54,17 @@ Create a .env and fill in the required information as defined in [mise.toml] env
 
 3.  **Place your data:**
 
-Put or symlink the directories and files you want to search inside the `data/` directory.
+Put or symlink the directories and files you want to search inside the `data/` directory. Symlinks are followed safely with cycle protection.
 
 ### Docker
 
-**Build and Run:**
+The image installs:
+- ripgrep, ripgrep-all
+- pandoc (DOCX), antiword (DOC), gron (JSON)
+
+It ships an rga config at `/etc/rga/config.json` that enables custom adapters for antiword and gron.
+
+Build and run:
 
 ```bash
 docker compose up --build -d
@@ -64,20 +74,23 @@ docker compose up --build -d
 
 ### Without Docker
 
-1. Ensure you have Python 3.13+ and UV.
-2. Clone the repository.
-3. Install dependencies:
-    - Using poetry: `uv sync`
-4. Install system dependencies:
-    - ripgrep
-    - Any other system-level dependencies (refer to the Dockerfile for a complete list)
-5. Run the application:
+1. Ensure you have Python 3.13+ and uv.
+2. Install Python deps: `uv sync`
+3. Install system tools:
+   - ripgrep, ripgrep-all
+   - pandoc (DOCX), antiword (DOC), gron (JSON)
+   - Any other system-level dependencies (refer to the Dockerfile for a complete list)
+4. Run the application:
 
 ```bash
-uv run app.py
+uv run granian app:app.asgi
 ```
 
 The application should now be accessible at `http://127.0.0.1:5000` (or the `GRANIAN_PORT` you configured).
+
+### Notes
+- The server chooses `rga` when the file filter is `*.doc`, `*.docx`, or `*.json`, otherwise it uses `rg`. When using `rga`, it passes `--rga-config-file=rga.config.json` if present (or `/etc/rga/config.json` in Docker).
+- Modal preview: `.docx` uses pandoc; `.doc` uses antiword; other files are read as text.
 
 ## Traefik Integration (Optional)
 
@@ -109,6 +122,10 @@ cp docker-compose.override.yml.example docker-compose.override.yml
 This project relies on several fantastic open-source tools:
 
 *   [Ripgrep](https://github.com/BurntSushi/ripgrep) for its incredibly fast search capabilities.
+    *   [Ripgrep-all](https://github.com/phiresky/ripgrep-all) for its ability to search through more file types.
+    *   [Pandoc](https://github.com/jgm/pandoc) for its ability to convert DOCX to text.
+    *   [Antiword](https://repology.org/project/antiword/information) for its ability to convert DOC to text.
+    *   [Gron](https://github.com/tomnomnom/gron) for its ability to convert JSON to text.
 *   [NanoDjango](https://github.com/radiac/nanodjango) for providing a minimal Django-like web framework.
 *   [Granian](https://github.com/emmett-framework/granian) as the high-performance ASGI server.
 *   [uv](https://github.com/astral-sh/uv) for fast Python packaging and resolution.

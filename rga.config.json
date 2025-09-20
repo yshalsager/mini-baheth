@@ -1,0 +1,27 @@
+{
+  "custom_adapters": [
+    {
+      "name": "antiword",
+      "version": 1,
+      "description": "Uses antiword to extract text from DOC files",
+      "extensions": ["doc"],
+      "mimetypes": ["application/msword"],
+      "binary": "antiword",
+      "args": ["-"],
+      "disabled_by_default": false,
+      "match_only_by_mime": false,
+      "output_path_hint": "${input_virtual_path}.txt"
+    },
+    {
+      "name": "gron",
+      "version": 1,
+      "description": "Transform JSON into discrete JS assignments",
+      "extensions": ["json"],
+      "mimetypes": ["application/json"],
+      "binary": "gron",
+      "args": [],
+      "disabled_by_default": false,
+      "match_only_by_mime": false
+    }
+  ]
+}

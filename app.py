@@ -5,7 +5,9 @@ import asyncio
 import logging
 import os
 import time
+import subprocess
 from pathlib import Path
+from shutil import which
 
 import orjson
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
@@ -131,8 +133,6 @@ def highlight_matches(text: str, submatches: list[dict[str, dict[str, str]]]) ->
 
 
 MAX_DEPTH = 3
-
-
 DIR_CACHE_TTL = 60
 _dir_cache: dict[int, tuple[float, list[str]]] = {}
 
@@ -182,10 +182,11 @@ def index(request):
     return render(
         request,
         "index.html",
-        {
-            "directories": get_directories(max_depth=1)
-        },
+        {"directories": get_directories(max_depth=1)},
     )
+
+
+RGA_FILE_FILTERS = ("*.doc", "*.docx", "*.json", "*.md")
 
 
 @app.api.get("/search")
@@ -195,18 +196,28 @@ async def search(
     if not query:
         return ""
 
-    cmd = [
-        "rg",
-        "--json",
-        "--max-count",
-        "100",
-        "-m",
-        "500",
-        "--no-ignore-vcs",
-        "-C",
-        "1",
-        "--follow",
-    ]
+    tool = "rga" if file_filter in RGA_FILE_FILTERS else "rg"
+    cmd = [which(tool)]
+    if tool == "rga":
+        cfg_candidates = [wdir / "rga.config.json", Path("/etc/rga/config.json")]
+        for cfg in cfg_candidates:
+            if cfg.exists():
+                cmd.append(f"--rga-config-file={str(cfg)}")
+                break
+
+    cmd.extend(
+        [
+            "--json",
+            "--max-count",
+            "100",
+            "-m",
+            "500",
+            "--no-ignore-vcs",
+            "-C",
+            "1",
+            "--follow",
+        ]
+    )
     if directory:
         cmd.extend(["-g", f"{directory}/**" if directory != "." else "**/"])
     if file_filter:
@@ -231,19 +242,49 @@ def file(
     path = data_dir / file
     if not path.exists():
         return HttpResponse(status=404)
+    # Extract readable text for binary office formats when possible
+    lines: list[str]
+    try:
+        ext = path.suffix.lower()
+        if ext == ".docx" and which("pandoc"):
+            proc = subprocess.run(
+                [
+                    "pandoc",
+                    "-f",
+                    "docx",
+                    "-t",
+                    "plain",
+                    str(path),
+                ],
+                capture_output=True,
+                check=False,
+            )
+            text = proc.stdout.decode("utf-8", errors="replace")
+            lines = text.splitlines()
+        elif ext == ".doc" and which("antiword"):
+            proc = subprocess.run(
+                ["antiword", str(path)], capture_output=True, check=False
+            )
+            text = proc.stdout.decode("utf-8", errors="replace")
+            lines = text.splitlines()
+        else:
+            lines = path.read_text(errors="replace").splitlines()
+    except Exception:
+        lines = path.read_text(errors="replace").splitlines()
+
     return render(
         request,
         "file_modal.html",
         {
             "file": path.relative_to(data_dir),
-            "lines": path.read_text().splitlines(),
+            "lines": lines,
             "line_number": line_number,
         },
     )
 
 
 @app.api.get("/directories")
-def directories_api(
+def directories(
     request: HttpRequest, q: str = "", limit: int = 200, max_depth: int = MAX_DEPTH
 ) -> HttpResponse:
     try:

@@ -8,6 +8,7 @@ wheels/
 
 # IDE
 .vscode/settings.json
+.vscode/launch.json
 
 # Virtual environments
 .venv
@@ -21,3 +22,4 @@ data/
 db.sqlite3
 static/
 static-collected/
+tmp/*
