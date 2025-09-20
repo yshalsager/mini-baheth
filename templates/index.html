@@ -74,26 +74,36 @@
       
         const directorySelect = document.getElementById('directory');
         const directorySearch = document.getElementById('directory-search');
-        const directoryOptions = Array.from(directorySelect.options);
 
-        function filterDirectoryOptions() {
-            const searchTerm = directorySearch.value.toLowerCase();
-            directorySelect.innerHTML = ''; // Clear existing options
-
-            directoryOptions.forEach(option => {
-                if (option.text.toLowerCase().includes(searchTerm)) {
-                    directorySelect.appendChild(option.cloneNode(true));
-                }
+        async function fetchDirectoryOptions(searchTerm) {
+          const url = new URL('/api/directories', window.location.origin);
+          if (searchTerm) url.searchParams.set('q', searchTerm);
+          url.searchParams.set('limit', '200');
+          try {
+            const res = await fetch(url.toString());
+            if (!res.ok) return;
+            const data = await res.json();
+            const keep = directorySelect.value;
+            directorySelect.innerHTML = '';
+            (data.directories || []).forEach(d => {
+              const opt = document.createElement('option');
+              opt.value = d; opt.textContent = d;
+              directorySelect.appendChild(opt);
             });
-            // Trigger change event if only one option is left or if the selected value is no longer valid
-            if (directorySelect.options.length === 1 || !directorySelect.querySelector(`option[value="${directorySelect.value}"]`)) {
-                directorySelect.dispatchEvent(new Event('change'));
+            if ([...directorySelect.options].some(o => o.value === keep)) {
+              directorySelect.value = keep;
             }
+            if (!directorySelect.value && directorySelect.options.length) {
+              directorySelect.dispatchEvent(new Event('change'));
+            }
+          } catch (e) {
+            console.error('Failed to fetch directories', e);
+          }
         }
 
-        directorySearch.addEventListener('input', filterDirectoryOptions);
-        // Initial filter in case there's a default search value (though unlikely here)
-        filterDirectoryOptions();
+        const debouncedDirFetch = debounce((e) => fetchDirectoryOptions(e.target.value), 250);
+        directorySearch.addEventListener('input', debouncedDirFetch);
+        directorySearch.addEventListener('focus', () => fetchDirectoryOptions(directorySearch.value));
 
         function createResultElement(result) {
           const div = document.createElement('div');

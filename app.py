@@ -3,6 +3,8 @@
 # ///
 import asyncio
 import logging
+import os
+import time
 from pathlib import Path
 
 import orjson
@@ -131,17 +133,57 @@ def highlight_matches(text: str, submatches: list[dict[str, dict[str, str]]]) ->
 MAX_DEPTH = 3
 
 
+DIR_CACHE_TTL = 60
+_dir_cache: dict[int, tuple[float, list[str]]] = {}
+
+
+def get_directories(max_depth: int = MAX_DEPTH) -> list[str]:
+    now = time.time()
+    cached = _dir_cache.get(max_depth)
+    if cached and (now - cached[0] < DIR_CACHE_TTL):
+        return cached[1]
+
+    dirs: list[str] = []
+    visited: set[str] = set()
+
+    for current, dirnames, _ in os.walk(data_dir, followlinks=True):
+        rp = os.path.realpath(current)
+        if rp in visited:
+            dirnames[:] = []
+            continue
+        visited.add(rp)
+
+        try:
+            rel = Path(current).relative_to(data_dir)
+        except ValueError:
+            dirnames[:] = []
+            continue
+
+        rel_str = "." if str(rel) == "." else str(rel)
+        depth = 0 if rel_str == "." else len(rel.parts)
+        dirs.append(rel_str)
+
+        if depth >= max_depth:
+            dirnames[:] = []
+
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for d in dirs:
+        if d not in seen:
+            seen.add(d)
+            ordered.append(d)
+
+    _dir_cache[max_depth] = (now, ordered)
+    return ordered
+
+
 @app.route("/")
 def index(request):
     return render(
         request,
         "index.html",
         {
-            "directories": [
-                str(p.relative_to(data_dir))
-                for p in data_dir.glob("**/", recurse_symlinks=True)
-                if len(p.relative_to(data_dir).parts) <= MAX_DEPTH
-            ]
+            "directories": get_directories(max_depth=1)
         },
     )
 
@@ -197,6 +239,33 @@ def file(
             "lines": path.read_text().splitlines(),
             "line_number": line_number,
         },
+    )
+
+
+@app.api.get("/directories")
+def directories_api(
+    request: HttpRequest, q: str = "", limit: int = 200, max_depth: int = MAX_DEPTH
+) -> HttpResponse:
+    try:
+        limit = max(1, min(int(limit or 200), 1000))
+    except Exception:
+        limit = 200
+    try:
+        max_depth = int(max_depth or MAX_DEPTH)
+    except Exception:
+        max_depth = MAX_DEPTH
+
+    dirs = get_directories(max_depth=max_depth)
+    if q:
+        ql = q.lower()
+        dirs = [d for d in dirs if ql in d.lower()]
+
+    if "." in dirs:
+        dirs = ["."] + [d for d in dirs if d != "."]
+
+    return HttpResponse(
+        orjson.dumps({"directories": dirs[:limit]}),
+        content_type="application/json",
     )
 
 
