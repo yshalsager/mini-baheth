@@ -1,3 +1,5 @@
+experimental_monorepo_root = true
+
 [tools]
 python = "3.14"
 "aqua:astral-sh/uv" = '0.9'
@@ -6,7 +8,7 @@ python = "3.14"
 "aqua:tomnomnom/gron" = '0.7.1'
 "github:jgm/pandoc" = '3.8'
 
-[tasks.default]
+[tasks.web]
 alias = 'default'
 run = 'uv run granian webapp.app:app.asgi'
 
