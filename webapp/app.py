@@ -52,9 +52,7 @@ def index(request):
 
 
 @app.api.get('/search')
-async def search(
-    request: StreamingHttpResponse, query: str, directory: str, file_filter: str
-):
+async def search(request: StreamingHttpResponse, query: str, directory: str, file_filter: str):
     if not query:
         return ''
 
@@ -69,7 +67,7 @@ async def search(
     except FileNotFoundError:
 
         async def error_stream():
-            yield f"data: {orjson.dumps(SearchError(error='File not found').model_dump()).decode()}\n\n"
+            yield f'data: {orjson.dumps(SearchError(error="File not found").model_dump()).decode()}\n\n'
 
         return StreamingHttpResponse(error_stream(), content_type='text/event-stream')
 
@@ -79,22 +77,18 @@ async def search(
                 data = payload.model_dump()
             else:
                 data = payload  # fallback for unexpected payloads
-            yield f"data: {orjson.dumps(data).decode()}\n\n"
+            yield f'data: {orjson.dumps(data).decode()}\n\n'
 
     return StreamingHttpResponse(event_stream(), content_type='text/event-stream')
 
 
 @app.api.get('/file')
-def file(
-    request: HttpRequest, file: str, line_number: int | None = None
-) -> HttpResponse:
+def file(request: HttpRequest, file: str, line_number: int | None = None) -> HttpResponse:
     if not file:
         return HttpResponse(status=400)
 
     try:
-        response = file_response(
-            DATA_DIR, FileRequest(path=file, line_number=line_number)
-        )
+        response = file_response(DATA_DIR, FileRequest(path=file, line_number=line_number))
     except ValueError:
         return HttpResponse(status=400)
     except FileNotFoundError:

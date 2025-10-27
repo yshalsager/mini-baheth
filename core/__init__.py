@@ -35,7 +35,7 @@ def highlight_matches(text: str, submatches: list[dict[str, dict[str, str]]]) ->
     for item in submatches:
         text = text.replace(
             item['match']['text'],
-            f"<span class=\"bg-yellow-200\">{item['match']['text']}</span>",
+            f'<span class="bg-yellow-200">{item["match"]["text"]}</span>',
         )
     return text.strip()
 
@@ -87,7 +87,7 @@ def build_search_command(
     if file_filter:
         if directory:
             last = cmd.pop()
-            cmd.append(f"{last}{'/' if directory != '.' else ''}{file_filter}")
+            cmd.append(f'{last}{"/" if directory != "." else ""}{file_filter}')
         else:
             cmd.extend(['-g', file_filter])
 
