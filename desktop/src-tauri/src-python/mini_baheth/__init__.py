@@ -30,7 +30,7 @@ from core.schemas import (  # noqa: E402
     SearchRequest,
 )
 
-DATA_DIR = PROJECT_ROOT / 'data'
+DATA_ROOT = None
 RGA_CONFIG_PATH = PROJECT_ROOT / 'rga.config.json'
 
 commands: Commands = Commands()
@@ -54,7 +54,7 @@ async def search(body: SearchRequest, app_handle: AppHandle) -> None:
         body.query,
         body.directory,
         body.file_filter,
-        DATA_DIR,
+        DATA_ROOT,
         RGA_CONFIG_PATH if RGA_CONFIG_PATH.exists() else None,
     )
 
@@ -69,14 +69,16 @@ async def search(body: SearchRequest, app_handle: AppHandle) -> None:
 
 @commands.command()
 async def list_directories(body: DirectoriesRequest | None = None) -> DirectoriesResponse:
+    if not DATA_ROOT:
+        return DirectoriesResponse(directories=[])
     request = body or DirectoriesRequest()
-    response = directories_response(DATA_DIR, request)
+    response = directories_response(DATA_ROOT, request)
     return response
 
 
 @commands.command()
 async def fetch_file(body: FileRequest) -> FileResponse:
-    response = file_response(DATA_DIR, body)
+    response = file_response(DATA_ROOT, body)
     return response
 
 
@@ -93,4 +95,23 @@ __all__ = [
     'commands',
     'main',
     'SearchStarted',
+    'get_data_root',
+    'set_data_root',
 ]
+
+
+@commands.command()
+async def get_data_root() -> str:
+    return str(DATA_ROOT)
+
+
+@commands.command()
+async def set_data_root(body: dict[str, str]) -> str:
+    path = body.get('path', '')
+    if not path:
+        return
+    candidate = Path(path).expanduser()
+    if not candidate.exists() or not candidate.is_dir():
+        raise FileNotFoundError(path)
+    DATA_ROOT = candidate.resolve()
+    return str(DATA_ROOT)

@@ -1,21 +1,47 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { open } from '@tauri-apps/plugin-dialog';
   import { pyInvoke } from 'tauri-plugin-pytauri-api';
 
   let directories: string[] = [];
   let status = 'Loading recent directories...';
+  let dataRoot = '';
 
-  onMount(async () => {
+  async function refreshDirectories(limit = 5) {
     try {
-      const response = await pyInvoke<{ directories: string[] }>('list_directories', {
-        limit: 5,
-      });
+      const response = await pyInvoke<{ directories: string[] }>('list_directories', { limit: limit ?? undefined });
       directories = response.directories;
       status = directories.length ? 'Listing a few directories from the search root:' : 'No directories found.';
     } catch (error) {
       status = error instanceof Error ? error.message : String(error);
+      directories = [];
     }
-  });
+  }
+
+  async function loadRootAndDirectories() {
+    try {
+      dataRoot = await pyInvoke<string>('get_data_root', {});
+    } catch (error) {
+      dataRoot = error instanceof Error ? error.message : String(error);
+    }
+    await refreshDirectories();
+  }
+
+  async function chooseRoot() {
+    const selected = await open({ directory: true });
+    if (!selected) {
+      return;
+    }
+    const path = Array.isArray(selected) ? selected[0] : selected;
+    try {
+      dataRoot = await pyInvoke<string>('set_data_root', { path });
+      await refreshDirectories();
+    } catch (error) {
+      status = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  onMount(loadRootAndDirectories);
 </script>
 
 <main class="container">
@@ -38,7 +64,11 @@
       <img src="/python.svg" class="logo python" alt="Python logo" />
     </a>
   </div>
-  <p class="tagline">{status}</p>
+  <div class="controls">
+    <p class="tagline">{status}</p>
+    <p class="root">Current root: <span>{dataRoot}</span></p>
+    <button class="chooser" on:click={chooseRoot}>Choose directory…</button>
+  </div>
   {#if directories.length}
     <ul class="directory-list">
       {#each directories as dir}
@@ -132,10 +162,42 @@
     text-align: center;
   }
 
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
   .tagline {
     margin-top: 0.5rem;
     font-size: 1.05rem;
     color: #3b3b3b;
+  }
+
+  .root {
+    font-size: 0.9rem;
+    color: #505050;
+  }
+
+  .root span {
+    font-family: Menlo, Monaco, monospace;
+  }
+
+  .chooser {
+    border-width: 0;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    background: linear-gradient(-45deg, #205f8a, #24c8db);
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+
+  .chooser:hover {
+    opacity: 0.85;
   }
 
   .directory-list {
