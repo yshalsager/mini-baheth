@@ -18,8 +18,14 @@ docker-compose.override.yml
 
 # Data
 .env
+.mise.local.toml
 data/
 db.sqlite3
 static/
 static-collected/
 tmp/*
+
+# PyTauri
+desktop/src-tauri/pyembed/
+desktop/src-tauri/target/
+.svelte-kit/
