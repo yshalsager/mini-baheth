@@ -21,13 +21,12 @@ path = "src/main.rs"
 required-features = ["pytauri/standalone"]
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2.4", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-opener = "2"
+tauri = { version = "2.8", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 pyo3 = { version = "0.25" }
 pytauri = { version = "0.8", features = [] }
-tauri-plugin-pytauri = { version = "0.8" }
+tauri-plugin-pytauri = { version = "0.8" } # required for pytauri IPC

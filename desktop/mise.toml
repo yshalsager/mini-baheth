@@ -1,0 +1,4 @@
+[tools]
+rust = "1.89.0"
+node = "24"
+"aqua:pnpm/pnpm" = 'latest'

@@ -1,9 +1,8 @@
 """The main entry point for the Tauri app."""
 
-import sys
 from multiprocessing import freeze_support
 
-from mini_baheth import main
+from . import main
 
 # - If you don't use `multiprocessing`, you can remove this line.
 # - If you do use `multiprocessing` but without this line,
@@ -11,4 +10,4 @@ from mini_baheth import main
 #   See: <https://pyinstaller.org/en/v6.11.1/common-issues-and-pitfalls.html#multi-processing>.
 freeze_support()
 
-sys.exit(main())
+raise SystemExit(main())
