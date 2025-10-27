@@ -12,5 +12,19 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "pytest-django>=4.11.1",
     "ruff>=0.14.2",
 ]
+
+
+[tool.ruff]
+fix = true
+target-version = "py314"
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "lf"
