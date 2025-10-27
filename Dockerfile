@@ -1,6 +1,6 @@
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.14
 ARG RGA_VERSION=0.10.9
-ARG UV_VERSION=0.8.19
+ARG UV_VERSION=0.9.5
 
 # ===== STAGE 1: Build system dependencies =====
 FROM public.ecr.aws/docker/library/python:${PYTHON_VERSION}-slim-trixie AS builder
