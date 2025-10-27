@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
-
+import asyncio
 import sys
+from pathlib import Path
 
 from anyio.from_thread import start_blocking_portal
 from pydantic import BaseModel
@@ -13,12 +13,18 @@ from pytauri import (
     builder_factory,
     context_factory,
 )
+from uuid import uuid4
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from core import directories_response, file_response, stream_search  # noqa: E402
+from core import (  # noqa: E402
+    ResultStreamProcessor,
+    directories_response,
+    file_response,
+    stream_search,
+)
 from core.schemas import (  # noqa: E402
     DirectoriesRequest,
     DirectoriesResponse,
@@ -33,6 +39,9 @@ from core.schemas import (  # noqa: E402
 DATA_ROOT = None
 RGA_CONFIG_PATH = PROJECT_ROOT / 'rga.config.json'
 
+_search_lock = asyncio.Lock()
+_active_processor: ResultStreamProcessor | None = None
+
 commands: Commands = Commands()
 
 
@@ -40,31 +49,61 @@ class SearchStarted(BaseModel):
     query: str
     directory: str
     file_filter: str
+    request_id: str
 
 
 @commands.command()
 async def search(body: SearchRequest, app_handle: AppHandle) -> None:
+    global _active_processor
+
     if not body.query:
-        Emitter.emit(app_handle, 'search_complete', SearchComplete())
+        request_id = body.request_id or uuid4().hex
+        async with _search_lock:
+            if _active_processor:
+                await _active_processor.cancel()
+                _active_processor = None
+        Emitter.emit(app_handle, 'search_complete', SearchComplete(request_id=request_id))
         return
 
-    Emitter.emit(app_handle, 'search_started', SearchStarted(**body.model_dump()))
+    request_id = body.request_id or uuid4().hex
 
-    processor = stream_search(
-        body.query,
-        body.directory,
-        body.file_filter,
-        DATA_ROOT,
-        RGA_CONFIG_PATH if RGA_CONFIG_PATH.exists() else None,
+    async with _search_lock:
+        if _active_processor and _active_processor is not None:
+            await _active_processor.cancel()
+            _active_processor = None
+
+        processor = stream_search(
+            body.query,
+            body.directory,
+            body.file_filter,
+            DATA_ROOT,
+            RGA_CONFIG_PATH if RGA_CONFIG_PATH.exists() else None,
+        )
+        _active_processor = processor
+
+    Emitter.emit(
+        app_handle,
+        'search_started',
+        SearchStarted(
+            query=body.query,
+            directory=body.directory,
+            file_filter=body.file_filter,
+            request_id=request_id,
+        ),
     )
 
     async for payload in processor.process():
+        enriched = payload.model_copy(update={'request_id': request_id})
         if isinstance(payload, SearchMatch):
-            Emitter.emit(app_handle, 'search_match', payload)
+            Emitter.emit(app_handle, 'search_match', enriched)
         elif isinstance(payload, SearchError):
-            Emitter.emit(app_handle, 'search_error', payload)
+            Emitter.emit(app_handle, 'search_error', enriched)
         elif isinstance(payload, SearchComplete):
-            Emitter.emit(app_handle, 'search_complete', payload)
+            Emitter.emit(app_handle, 'search_complete', enriched)
+
+    async with _search_lock:
+        if _active_processor is processor:
+            _active_processor = None
 
 
 @commands.command()
@@ -113,5 +152,6 @@ async def set_data_root(body: dict[str, str]) -> str:
     candidate = Path(path).expanduser()
     if not candidate.exists() or not candidate.is_dir():
         raise FileNotFoundError(path)
+    global DATA_ROOT
     DATA_ROOT = candidate.resolve()
     return str(DATA_ROOT)
