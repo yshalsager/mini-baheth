@@ -9,6 +9,7 @@ class SearchRequest(BaseModel):
     query: str
     directory: str = '.'
     file_filter: str = ''
+    request_id: str | None = None
 
 
 class SearchMatch(BaseModel):
@@ -19,14 +20,17 @@ class SearchMatch(BaseModel):
     context_before: str = ''
     context_after: str = ''
     highlighted_text: str = ''
+    request_id: str | None = None
 
 
 class SearchError(BaseModel):
     error: str
+    request_id: str | None = None
 
 
 class SearchComplete(BaseModel):
     complete: bool = True
+    request_id: str | None = None
 
 
 SearchEvent = SearchMatch | SearchError | SearchComplete

@@ -50,6 +50,18 @@ def resolve_data_path(data_dir: Path, relative: str) -> Path:
     return candidate
 
 
+def _normalize_directory(directory: str, data_dir: Path) -> str:
+    normalized = (directory or '').strip()
+    if not normalized or normalized == '.':
+        return '.'
+
+    resolved = resolve_data_path(data_dir, normalized)
+    if resolved == data_dir.resolve():
+        return '.'
+
+    return str(resolved.relative_to(data_dir))
+
+
 def build_search_command(
     query: str,
     directory: str,
@@ -80,18 +92,16 @@ def build_search_command(
         ]
     )
 
-    if directory:
-        pattern = f'{directory}/**' if directory != '.' else '**/'
-        cmd.extend(['-g', pattern])
+    target_dir = _normalize_directory(directory, data_dir)
 
     if file_filter:
-        if directory:
-            last = cmd.pop()
-            cmd.append(f'{last}{"/" if directory != "." else ""}{file_filter}')
-        else:
-            cmd.extend(['-g', file_filter])
+        pattern = f'**/{file_filter}' if target_dir == '.' else f'{target_dir}/**/{file_filter}'
+        cmd.extend(['-g', pattern])
+    elif target_dir != '.':
+        cmd.extend(['-g', f'{target_dir}/**'])
 
     cmd.append(query)
+    cmd.append(target_dir)
     return cmd
 
 
@@ -102,9 +112,11 @@ class ResultStreamProcessor:
         self.previous_match: SearchMatch | None = None
         self.context_before = ''
         self.proc: asyncio.subprocess.Process | None = None
+        self.cancelled = False
 
     async def process(self) -> AsyncGenerator[SearchEvent, None]:
         try:
+            self.cancelled = False
             self.proc = await asyncio.create_subprocess_exec(
                 *self.command,
                 cwd=self.data_dir,
@@ -134,9 +146,11 @@ class ResultStreamProcessor:
                         yield payload
 
             if self.previous_match:
-                yield self.previous_match
+                if not self.cancelled:
+                    yield self.previous_match
 
-            yield SearchComplete()
+            if not self.cancelled:
+                yield SearchComplete()
         except Exception as exc:  # noqa: BLE001
             logging.error('Stream processing error: %s', exc)
             yield SearchError(error=str(exc))
@@ -147,6 +161,18 @@ class ResultStreamProcessor:
                 except asyncio.TimeoutError:
                     self.proc.terminate()
                     await self.proc.wait()
+
+    async def cancel(self) -> None:
+        self.cancelled = True
+        if not self.proc:
+            return
+        if self.proc.returncode is None:
+            self.proc.terminate()
+            try:
+                await asyncio.wait_for(self.proc.wait(), timeout=2)
+            except asyncio.TimeoutError:
+                self.proc.kill()
+                await self.proc.wait()
 
     def _handle_match(self, result: dict[str, Any]) -> SearchMatch | None:
         data = result.get('data', {})
