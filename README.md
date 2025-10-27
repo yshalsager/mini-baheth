@@ -83,7 +83,7 @@ docker compose up --build -d
 4. Run the application:
 
 ```bash
-uv run granian app:app.asgi
+uv run granian webapp.app:app.asgi
 ```
 
 The application should now be accessible at `http://127.0.0.1:5000` (or the `GRANIAN_PORT` you configured).
@@ -109,7 +109,7 @@ cp docker-compose.override.yml.example docker-compose.override.yml
 
 ## Files & Directories
 
-*   `app.py`: Main NanoDjango application, defines routes and search logic.
+*   `webapp/app.py`: Main NanoDjango application, defines routes and search logic.
 *   `templates/`: HTML templates for the UI.
 *   `data/`: Mount point for the files/directories you want to search.
 *   `Dockerfile`: Defines the Docker image build process.

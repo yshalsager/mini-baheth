@@ -8,7 +8,7 @@ python = "3.14"
 
 [tasks.default]
 alias = 'default'
-run = 'uv run granian app:app.asgi'
+run = 'uv run granian webapp.app:app.asgi'
 
 [env]
 # Granian configuration
