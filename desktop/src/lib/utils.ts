@@ -11,3 +11,11 @@ export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
 export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, "children"> : T;
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
+
+export function debounce<T extends (...args: any[]) => void>(fn: T, wait: number) {
+	let timeout: ReturnType<typeof setTimeout>
+	return (...args: Parameters<T>) => {
+		clearTimeout(timeout)
+		timeout = setTimeout(() => fn(...args), wait)
+	}
+}
