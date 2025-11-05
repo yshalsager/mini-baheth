@@ -1,9 +1,30 @@
 <script lang="ts">
   import FileViewerDialog from "$lib/components/FileViewerDialog.svelte";
+  import InlineFilePreview from "$lib/components/InlineFilePreview.svelte";
+  import {
+    Menubar,
+    MenubarMenu,
+    MenubarTrigger,
+    MenubarContent,
+    MenubarItem,
+    MenubarSeparator,
+  } from "$lib/components/ui/menubar";
+  import {
+    CommandDialog,
+    CommandInput,
+    CommandList,
+    CommandGroup,
+    CommandItem,
+    CommandEmpty,
+  } from "$lib/components/ui/command";
+  import { toast } from "svelte-sonner";
   import ResultsList from "$lib/components/ResultsList.svelte";
+  import SearchInput from "$lib/components/SearchInput.svelte";
   import SearchPanel from "$lib/components/SearchPanel.svelte";
+
   import { Button } from "$lib/components/ui/button";
-  import { Card, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import { ResizablePaneGroup, ResizablePane, ResizableHandle } from "$lib/components/ui/resizable";
+  import { mode, setMode, resetMode } from 'mode-watcher'
   import { FILE_FILTERS, MAX_RESULTS } from "$lib/constants";
   import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
   import { with_current } from "$lib/search-events";
@@ -29,6 +50,10 @@
   let searching = $state(false);
   let search_complete = $state(false);
   let current_request_id = $state("");
+  let shown_count = $state(0);
+  let total_count = $state(0);
+  let elapsed_ms = $state(0);
+  let _timer: number | null = null;
 
   let results = $state<SearchMatchPayload[]>([]);
 
@@ -38,6 +63,19 @@
   let modal_lines = $state<string[]>([]);
   let modal_line_number = $state<number | null>(null);
   let modal_error = $state("");
+
+  // inline preview state
+  let selected_key = $state("");
+  let preview_file = $state("");
+  let preview_lines = $state<string[]>([]);
+  let preview_line_number = $state<number | null>(null);
+  let preview_loading = $state(false);
+  let preview_error = $state("");
+  let preview_wrap = $state(true);
+  let preview_font_px = $state(13);
+  let cmd_open = $state(false);
+  let cmd_query = $state("");
+  const help_url = "https://github.com/";
 
   let initialized = $state(false);
 
@@ -82,6 +120,10 @@
             searching = true;
             search_complete = false;
             search_error = "";
+            if (_timer) { clearInterval(_timer); _timer = null }
+            const start = Date.now();
+            elapsed_ms = 0;
+            _timer = setInterval(() => { elapsed_ms = Date.now() - start }, 100) as unknown as number;
           })
         )
       );
@@ -101,6 +143,7 @@
           only_current(payload => {
             search_error = payload.error;
             searching = false;
+            if (_timer) { clearInterval(_timer); _timer = null }
           })
         )
       );
@@ -111,6 +154,7 @@
           only_current(_ => {
             searching = false;
             search_complete = true;
+            if (_timer) { clearInterval(_timer); _timer = null }
           })
         )
       );
@@ -231,6 +275,63 @@
     }
   }
 
+  function handle_select_result(r: SearchMatchPayload) {
+    const key = r.path + ":" + (r.line_number ?? "na");
+    if (selected_key === key) return;
+    selected_key = key;
+    preview_loading = true;
+    preview_error = "";
+    preview_file = "";
+    preview_lines = [];
+    preview_line_number = null;
+    void fetch_file({ path: r.path, line_number: r.line_number ?? undefined })
+      .then(resp => {
+        preview_file = resp.file;
+        preview_lines = resp.lines;
+        preview_line_number = resp.line_number ?? r.line_number ?? null;
+      })
+      .catch(err => {
+        preview_error = err instanceof Error ? err.message : String(err);
+      })
+      .finally(() => {
+        preview_loading = false;
+      });
+  }
+  function focus_query() {
+    const el = document?.getElementById("query") as HTMLInputElement | null;
+    el?.focus();
+  }
+  function focus_results() {
+    const el = document?.getElementById("results-grid") as HTMLElement | null;
+    el?.focus();
+  }
+  const commands = $derived([
+    { id: "change-root", label: "تغيير مجلد البيانات", run: choose_root },
+    { id: "focus-query", label: "التركيز على البحث", run: focus_query },
+    { id: "focus-results", label: "التركيز على النتائج", run: focus_results },
+    {
+      id: "clear-query",
+      label: "مسح البحث",
+      run: () => {
+        query = "";
+        handle_query_input();
+      },
+    },
+  ]);
+  onMount(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        cmd_open = true;
+      }
+      if (e.altKey && (e.key === "+" || e.key === "=")) preview_font_px = Math.min(20, preview_font_px + 1);
+      if (e.altKey && e.key === "-") preview_font_px = Math.max(11, preview_font_px - 1);
+      if (e.altKey && e.key.toLowerCase() === "w") preview_wrap = !preview_wrap;
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  });
+
   function handle_query_input() {
     if (!trimmed_query) return reset_results();
     schedule_search();
@@ -252,6 +353,19 @@
     file_filter = value;
   }
 
+  function format_elapsed(ms: number) {
+    if (!ms || ms < 0) return '0ms'
+    const s = Math.floor(ms / 1000)
+    const rem = ms % 1000
+    if (s >= 60) {
+      const m = Math.floor(s / 60)
+      const ss = s % 60
+      return `${m}m ${ss}s`
+    }
+    if (s > 0) return `${s}.${String(Math.floor(rem/100)).padStart(1,'0')}s`
+    return `${ms}ms`
+  }
+
   let prev_filter_key = $state("");
   $effect(() => {
     if (!initialized) return;
@@ -261,54 +375,167 @@
     if (!trimmed_query) return reset_results();
     if (can_search) void start_search();
   });
+
+  // keep selection on search completion when possible; auto-select first if none
+  $effect(() => {
+    if (!search_complete) return;
+    if (!results.length) return;
+    const exists = results.some(r => r.path + ":" + (r.line_number ?? "na") === selected_key);
+    if (exists) return;
+    const first = results[0];
+    if (!first) return;
+    handle_select_result(first);
+  });
+
+  // toast errors
+  $effect(() => {
+    if (!search_error) return;
+    toast.error(search_error);
+  });
 </script>
 
-<main class="min-h-screen bg-muted/10 py-8" dir="rtl">
-  <div class="mx-auto flex max-w-6xl flex-col gap-6 px-4">
-    <header class="flex flex-col gap-2 text-right">
-      <h1 class="text-3xl font-bold">باحث الصغير</h1>
-      <p class="text-sm text-muted-foreground">{root_hint}</p>
-      <div class="flex flex-wrap items-center justify-end gap-3">
-        <Button variant="outline" size="sm" onclick={choose_root}>تغيير مجلد البيانات</Button>
-      </div>
-    </header>
+<main class="h-svh w-full bg-muted/10" dir="rtl">
+  <div class="flex min-w-0 w-full p-4 h-full">
+    <div class="flex-1 min-h-0 min-w-0 overflow-x-hidden space-y-4 flex flex-col">
+        <div class="flex items-end justify-between text-right">
+          <div class="flex items-end gap-3">
+            <div>
+              <h1 class="text-2xl font-bold">باحث الصغير</h1>
+              <p class="text-sm text-muted-foreground">{root_hint}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <Button variant="outline" size="sm" onclick={choose_root}>تغيير مجلد البيانات</Button>
+          </div>
+        </div>
 
-    <Card class="shadow-sm">
-      <CardHeader class="space-y-2 text-right">
-        <CardTitle>خيارات البحث</CardTitle>
-        <p class="text-sm text-muted-foreground">{directory_hint}</p>
-      </CardHeader>
-      <SearchPanel
-        bind:directory_search
-        {directories}
-        {directories_loading}
-        {directories_error}
-        bind:selected_directory
-        bind:file_filter
-        bind:query
-        {directory_hint}
-        {search_hint}
-        {search_error}
-        {handle_directory_search}
-        {handle_directory_focus}
-        {handle_directory_value_change}
-        {handle_file_filter_change}
-        {handle_query_input}
-        on_enter={() => start_search()}
-      />
-    </Card>
+        <Menubar>
+          <MenubarMenu>
+            <MenubarTrigger>ملف</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onclick={choose_root}>تغيير الجذر</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger>تحرير</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem
+                onclick={() => {
+                  query = "";
+                  handle_query_input();
+                }}>مسح البحث</MenubarItem
+              >
+            </MenubarContent>
+          </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger>عرض</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onclick={() => (preview_wrap = !preview_wrap)}>تبديل التفاف السطور</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onclick={() => (preview_font_px = Math.max(11, preview_font_px - 1))}>تصغير الخط</MenubarItem>
+              <MenubarItem onclick={() => (preview_font_px = Math.min(20, preview_font_px + 1))}>تكبير الخط</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onclick={() => setMode('light')}>{mode.current === 'light' ? '✓ ' : ''}الوضع الفاتح</MenubarItem>
+              <MenubarItem onclick={() => setMode('dark')}>{mode.current === 'dark' ? '✓ ' : ''}الوضع الداكن</MenubarItem>
+              <MenubarItem onclick={() => resetMode()}>{mode.current === 'system' ? '✓ ' : ''}مطابق للنظام</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger>مساعدة</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem
+                onclick={() => {
+                  try {
+                    import("@tauri-apps/plugin-opener").then(m => m.openUrl(help_url));
+                  } catch {}
+                }}>الدليل</MenubarItem
+              >
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
 
-    <section class="space-y-4">
-      {#if !trimmed_query}
-        <p class="text-right text-sm text-muted-foreground">ابدأ بكتابة عبارة البحث لعرض النتائج.</p>
-      {:else if !results.length && searching}
-        <p class="text-right text-sm text-muted-foreground">جارٍ جمع النتائج...</p>
-      {:else if !results.length && search_complete}
-        <p class="text-right text-sm text-muted-foreground">لم يتم العثور على نتائج مطابقة.</p>
-      {/if}
+        <div class="rounded border bg-background">
+          <SearchPanel
+            bind:directory_search
+            {directories}
+            {directories_loading}
+            {directories_error}
+            bind:selected_directory
+            bind:file_filter
+            bind:query
+            {directory_hint}
+            {search_hint}
+            {search_error}
+            {handle_directory_search}
+            {handle_directory_focus}
+            {handle_directory_value_change}
+            {handle_file_filter_change}
+            {handle_query_input}
+            on_enter={() => start_search()}
+          />
+        </div>
 
-      <ResultsList {results} {open_result} />
-    </section>
+        <ResizablePaneGroup direction="horizontal" class="w-full flex-1 min-h-0 rounded border">
+          <ResizablePane class="min-w-0" defaultSize={60} minSize={35}>
+            <section class="h-full min-w-0 space-y-4 overflow-y-auto overflow-x-hidden p-3">
+              {#if !trimmed_query}
+                <p class="text-right text-sm text-muted-foreground">ابدأ بكتابة عبارة البحث لعرض النتائج.</p>
+              {:else if !results.length && searching}
+                <p class="text-right text-sm text-muted-foreground">جارٍ جمع النتائج...</p>
+              {:else if !results.length && search_complete}
+                <p class="text-right text-sm text-muted-foreground">لم يتم العثور على نتائج مطابقة.</p>
+              {/if}
+
+              {#key current_request_id}
+                <ResultsList
+                  {results}
+                  {open_result}
+                  {selected_key}
+                  select_result={handle_select_result}
+                  bind:shown_count
+                  bind:total_count
+                />
+              {/key}
+            </section>
+          </ResizablePane>
+          <ResizableHandle withHandle />
+          <ResizablePane class="min-w-0" defaultSize={40} minSize={25}>
+            <section class="h-full min-w-0 overflow-hidden rounded bg-background p-4 text-right">
+              <InlineFilePreview
+                file={preview_file}
+                lines={preview_lines}
+                line_number={preview_line_number}
+                loading={preview_loading}
+                error={preview_error}
+                bind:wrap={preview_wrap}
+                bind:font_px={preview_font_px}
+              />
+            </section>
+          </ResizablePane>
+        </ResizablePaneGroup>
+
+        <footer class="flex items-center justify-between rounded border bg-background px-3 py-2 text-xs text-muted-foreground">
+          <div class="flex items-center gap-2">
+            <span
+              >{searching
+                ? "جارٍ البحث..."
+                : search_error
+                  ? "فشل البحث"
+                  : search_complete
+                    ? "انتهى البحث"
+                    : "جاهز"}</span
+            >
+            {#if search_error}
+              <span class="text-destructive">{search_error}</span>
+            {/if}
+          </div>
+          <div class="flex items-center gap-3" dir="ltr">
+            <span>showing {shown_count} of {total_count}</span>
+            <span>|</span>
+            <span>elapsed: {format_elapsed(elapsed_ms)}</span>
+          </div>
+        </footer>
+    </div>
   </div>
 </main>
 
@@ -320,3 +547,31 @@
   loading={modal_loading}
   error={modal_error}
 />
+
+<CommandDialog bind:open={cmd_open}>
+  <div class="text-right">
+    <CommandInput placeholder="ابحث عن أمر..." oninput={(e: any) => { cmd_query = e?.currentTarget?.value ?? '' }} />
+  </div>
+  <CommandList>
+    <CommandEmpty>لا توجد أوامر مطابقة.</CommandEmpty>
+    <CommandGroup heading="بحث">
+      {#if (cmd_query || query).trim()}
+        <CommandItem value={`ابحث: ${(cmd_query || query)}`}
+          onclick={() => { query = (cmd_query || query); handle_query_input(); cmd_open = false; start_search() }}>
+          ابحث: {(cmd_query || query)}
+        </CommandItem>
+      {/if}
+    </CommandGroup>
+    <CommandGroup heading="الأوامر">
+      {#each commands as c (c.id)}
+        <CommandItem
+          value={c.label}
+          onclick={() => {
+            c.run();
+            cmd_open = false;
+          }}>{c.label}</CommandItem
+        >
+      {/each}
+    </CommandGroup>
+  </CommandList>
+</CommandDialog>

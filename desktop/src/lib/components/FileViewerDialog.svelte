@@ -37,7 +37,7 @@
             <div class='flex items-start gap-3'>
               <span class='w-10 select-none text-right font-mono text-xs text-muted-foreground'>{index + 1}</span>
               {#if line_number === index + 1}
-                <span {@attach center_on_mount} aria-current='true' class='flex-1 whitespace-pre-wrap rounded px-2 py-1 bg-yellow-100'>{line}</span>
+                <span {@attach center_on_mount} aria-current='true' class='flex-1 whitespace-pre-wrap rounded px-2 py-1 bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-50'>{line}</span>
               {:else}
                 <span class='flex-1 whitespace-pre-wrap rounded px-2 py-1'>{line}</span>
               {/if}

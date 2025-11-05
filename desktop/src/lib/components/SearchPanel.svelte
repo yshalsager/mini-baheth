@@ -43,7 +43,7 @@
   } = $props()
 </script>
 
-<CardContent class='space-y-6'>
+<CardContent class='space-y-6 py-4'>
   <div class='grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]'>
     <DirectoryPicker
       bind:directory_search
