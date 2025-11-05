@@ -119,3 +119,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Remove sidebar layout gap so content always spans full width */
+[data-slot="sidebar-gap"] {
+  width: 0 !important;
+  transition: none !important;
+}
