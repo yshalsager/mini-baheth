@@ -213,7 +213,7 @@
       onkeydown={handle_keydown}
     >
       <TableHeader class="bg-muted/50">
-        <TableRow class="text-right">
+        <TableRow class="text-end">
           <TableHead class="px-3 py-2">الملف</TableHead>
           <TableHead class="px-3 py-2">السطر</TableHead>
           <TableHead class="px-3 py-2">المقتطف</TableHead>
@@ -226,7 +226,7 @@
           <ContextMenu>
             <ContextMenuTrigger class="contents">
               <TableRow
-                class="border-t text-right align-top hover:bg-muted/30 data-[selected=true]:bg-accent/20"
+                class="border-t text-end align-top hover:bg-muted/30 data-[selected=true]:bg-accent/20"
                 data-selected={selected_key === key}
                 onclick={() => select_result(result)}
                 aria-selected={selected_key === key}

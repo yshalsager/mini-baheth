@@ -39,7 +39,7 @@
     />
     <Select type="single" value={selected_directory} onValueChange={handle_directory_value_change}>
       <SelectTrigger class="w-full justify-between">
-        <span data-slot="select-value" class="flex-1 truncate text-right">{selected_directory}</span>
+        <span data-slot="select-value" class="flex-1 truncate text-start">{selected_directory}</span>
       </SelectTrigger>
       <SelectContent class="max-h-72">
         {#each directories as option (option)}

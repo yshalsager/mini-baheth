@@ -29,7 +29,7 @@
 
 <Dialog bind:open>
   <DialogContent class="max-w-3xl" dir="rtl">
-    <DialogHeader class="gap-2 text-right">
+    <DialogHeader class="gap-2 text-start">
       <DialogTitle>{file}</DialogTitle>
       {#if line_number}
         <p class="text-sm text-muted-foreground">سطر {line_number}</p>
@@ -44,7 +44,7 @@
         {:else}
           {#each lines as line, index (index)}
             <div class="flex items-start gap-3">
-              <span class="w-10 select-none text-right font-mono text-xs text-muted-foreground">{index + 1}</span>
+              <span class="w-10 select-none text-end font-mono text-xs text-muted-foreground">{index + 1}</span>
               {#if line_number === index + 1}
                 <span
                   {@attach center_on_mount}

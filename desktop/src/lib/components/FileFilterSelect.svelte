@@ -19,7 +19,7 @@
   <Label for="file-filter">نوع الملف</Label>
   <Select type="single" value={file_filter} onValueChange={handle_file_filter_change}>
     <SelectTrigger id="file-filter" class="w-full justify-between">
-      <span data-slot="select-value" class="flex-1 truncate text-right">{label}</span>
+      <span data-slot="select-value" class="flex-1 truncate text-end">{label}</span>
     </SelectTrigger>
     <SelectContent class="max-h-72">
       {#each options as option (option)}

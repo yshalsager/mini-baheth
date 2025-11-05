@@ -74,7 +74,7 @@
           {:else}
             {#each lines as line, index (index)}
               <div class="flex items-start gap-3">
-                <span class="w-10 select-none text-right font-mono text-xs text-muted-foreground">{index + 1}</span>
+                <span class="w-10 select-none text-end font-mono text-xs text-muted-foreground">{index + 1}</span>
                 {#if line_number === index + 1}
                   <span
                     {@attach center_on_mount}
