@@ -24,6 +24,8 @@
       await navigator.clipboard?.writeText(lines.join('\n'))
     } catch {}
   }
+
+  const pre_class = $derived(wrap ? 'whitespace-pre-wrap' : 'whitespace-pre')
 </script>
 
 <div class='flex h-full flex-col gap-2'>
@@ -57,11 +59,11 @@
               <div class='flex items-start gap-3'>
                 <span class='w-10 select-none text-right font-mono text-xs text-muted-foreground'>{index + 1}</span>
                 {#if line_number === index + 1}
-                  <span {@attach center_on_mount} aria-current='true' class={'flex-1 rounded bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-50 px-2 py-1 ' + (wrap ? 'whitespace-pre-wrap' : 'whitespace-pre')}>
+                  <span {@attach center_on_mount} aria-current='true' class={'flex-1 rounded bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-50 px-2 py-1 ' + pre_class}>
                     {line}
                   </span>
                 {:else}
-                  <span class={'flex-1 rounded px-2 py-1 ' + (wrap ? 'whitespace-pre-wrap' : 'whitespace-pre')}>{line}</span>
+                  <span class={'flex-1 rounded px-2 py-1 ' + pre_class}>{line}</span>
                 {/if}
               </div>
             {/each}

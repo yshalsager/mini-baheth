@@ -157,6 +157,15 @@
       await revealItemInDir(path);
     } catch {}
   }
+
+  function open_at_line(e: Event, r: SearchMatchPayload) {
+    e.stopPropagation();
+    open_result(r.path, r.line_number);
+  }
+
+  function copy_path(r: SearchMatchPayload) {
+    navigator.clipboard?.writeText(r.path);
+  }
 </script>
 
 <section class="space-y-2">
@@ -178,20 +187,21 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        {#each visible_results as result, idx (result.path + ":" + (result.line_number ?? "na") + ":" + idx)}
+        {#each visible_results as result, idx (key_of(result) + ":" + idx)}
+          {@const key = key_of(result)}
           <ContextMenu>
             <ContextMenuTrigger class="contents">
               <TableRow
                 class="border-t text-right align-top hover:bg-muted/30 data-[selected=true]:bg-accent/20"
-                data-selected={selected_key === result.path + ":" + (result.line_number ?? "na")}
+                data-selected={selected_key === key}
                 onclick={() => select_result(result)}
-                aria-selected={selected_key === result.path + ":" + (result.line_number ?? "na")}
+                aria-selected={selected_key === key}
               >
                 <TableCell class="px-3 py-2" dir="ltr">
                   <div class="flex min-w-0 items-center justify-between gap-2" dir="ltr">
                     <Button variant="link" class="px-0 text-sm truncate" onclick={() => open_result(result.path)}>{result.path}</Button>
                     <div class="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" aria-label="افتح عند السطر" title="افتح عند السطر" onclick={e => { e.stopPropagation(); open_result(result.path, result.line_number); }}>
+                      <Button variant="ghost" size="icon" aria-label="افتح عند السطر" title="افتح عند السطر" onclick={e => open_at_line(e, result)}>
                         <LocateFixed class="size-4" />
                       </Button>
                       <DropdownMenu>
@@ -199,7 +209,7 @@
                           <MoreHorizontal class="size-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="min-w-40" onkeydown={e => e.stopPropagation()}>
-                          <DropdownMenuItem onclick={() => { navigator.clipboard?.writeText(result.path) }}>نسخ المسار</DropdownMenuItem>
+                          <DropdownMenuItem onclick={() => copy_path(result)}>نسخ المسار</DropdownMenuItem>
                           <DropdownMenuItem onclick={() => { open_in_os_path(result.path) }}>فتح الملف</DropdownMenuItem>
                           <DropdownMenuItem onclick={() => { reveal_in_os_path(result.path) }}>إظهار في المجلد</DropdownMenuItem>
                           <DropdownMenuSeparator />
@@ -227,7 +237,7 @@
               </TableRow>
             </ContextMenuTrigger>
             <ContextMenuContent class="min-w-40" onkeydown={e => e.stopPropagation()}>
-              <ContextMenuItem onclick={() => { navigator.clipboard?.writeText(result.path) }}>نسخ المسار</ContextMenuItem>
+              <ContextMenuItem onclick={() => copy_path(result)}>نسخ المسار</ContextMenuItem>
               <ContextMenuItem onclick={() => { open_in_os_path(result.path) }}>فتح الملف</ContextMenuItem>
               <ContextMenuItem onclick={() => { reveal_in_os_path(result.path) }}>إظهار في المجلد</ContextMenuItem>
               <ContextMenuSeparator />

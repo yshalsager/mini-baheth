@@ -40,7 +40,6 @@
   let directories_loading = $state(false);
   let directories_error = $state("");
   let selected_directory = $state("");
-
   let file_filter = $state(FILE_FILTERS[0]);
 
   let query = $state("");
@@ -76,7 +75,6 @@
   const help_url = "https://github.com/";
 
   let initialized = $state(false);
-
   const trimmed_query = $derived(query.trim());
   const can_search = $derived(!!trimmed_query && !!selected_directory);
   const search_hint = $derived(
@@ -419,7 +417,7 @@
               <MenubarItem onclick={() => (preview_wrap = !preview_wrap)}>تبديل التفاف السطور</MenubarItem>
               <MenubarSeparator />
               <MenubarItem onclick={() => (preview_font_px = Math.max(11, preview_font_px - 1))}>تصغير الخط</MenubarItem>
-              <MenubarItem onclick={() => (preview_font_px = Math.min(20, preview_font_px + 1))}>تكبير الخط</MenubarItem>
+              <MenubarItem onclick={() => (preview_font_px = Math.min(28, preview_font_px + 1))}>تكبير الخط</MenubarItem>
               <MenubarSeparator />
               <MenubarItem onclick={() => setMode('light')}>{userPrefersMode.current === 'light' ? '✓ ' : ''}الوضع الفاتح</MenubarItem>
               <MenubarItem onclick={() => setMode('dark')}>{userPrefersMode.current === 'dark' ? '✓ ' : ''}الوضع الداكن</MenubarItem>

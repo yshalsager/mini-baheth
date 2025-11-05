@@ -22,6 +22,8 @@
     handle_directory_focus: () => void
     handle_directory_value_change: (value: string) => void
   } = $props()
+
+  const status_hint = $derived(directories_error || (directories_loading ? 'جاري تحميل المجلدات...' : ''))
 </script>
 
 <div class='space-y-2'>
@@ -46,10 +48,7 @@
       </SelectContent>
     </Select>
   </div>
-  {#if directories_error}
-    <p class='text-sm text-destructive'>{directories_error}</p>
-  {/if}
-  {#if directories_loading}
-    <p class='text-sm text-muted-foreground'>جاري تحميل المجلدات...</p>
+  {#if status_hint}
+    <p class={'text-sm ' + (directories_error ? 'text-destructive' : 'text-muted-foreground')}>{status_hint}</p>
   {/if}
 </div>
