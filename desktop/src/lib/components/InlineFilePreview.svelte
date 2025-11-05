@@ -1,6 +1,7 @@
 <script lang='ts'>
   import { ScrollArea } from '$lib/components/ui/scroll-area'
   import { Button } from '$lib/components/ui/button'
+  import Copy from '@lucide/svelte/icons/copy'
 
   let { file = '', lines = [], line_number = null, loading = false, error = '', wrap = $bindable(true), font_px = $bindable(13) }: {
     file?: string
@@ -22,6 +23,12 @@
   async function copy_all() {
     try {
       await navigator.clipboard?.writeText(lines.join('\n'))
+    } catch {}
+  }
+
+  async function copy_line(text: string) {
+    try {
+      await navigator.clipboard?.writeText(text)
     } catch {}
   }
 
@@ -65,6 +72,9 @@
                 {:else}
                   <span class={'flex-1 rounded px-2 py-1 ' + pre_class}>{line}</span>
                 {/if}
+                <Button size='icon' variant='ghost' title='نسخ السطر' aria-label='نسخ السطر' onclick={() => copy_line(line)}>
+                  <Copy class='size-4' />
+                </Button>
               </div>
             {/each}
           {/if}
