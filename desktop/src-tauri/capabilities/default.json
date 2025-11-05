@@ -8,6 +8,22 @@
   "permissions": [
     "core:default",
     "pytauri:default",
-    "dialog:default"
+    "dialog:default",
+    "opener:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        { "path": "$HOME/**" },
+        { "path": "$DESKTOP/**" },
+        { "path": "$DOCUMENT/**" },
+        { "path": "$DOWNLOAD/**" },
+        { "path": "$DATA/**" },
+        { "path": "$LOCALDATA/**" },
+        { "path": "$APPDATA/**" },
+        { "path": "$APPLOCALDATA/**" },
+        { "path": "$PUBLIC/**" },
+        { "path": "$TEMP/**" }
+      ]
+    }
   ]
 }

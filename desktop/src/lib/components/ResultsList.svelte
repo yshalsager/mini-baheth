@@ -1,26 +1,27 @@
 <script lang="ts">
+  import { infinite_scroll } from "$lib/attachments";
   import { Button } from "$lib/components/ui/button";
-  import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "$lib/components/ui/table";
-  import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-  } from "$lib/components/ui/dropdown-menu";
-  import LocateFixed from "@lucide/svelte/icons/locate-fixed";
-  import MoreHorizontal from "@lucide/svelte/icons/more-horizontal";
   import {
     ContextMenu,
-    ContextMenuTrigger,
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuSeparator,
+    ContextMenuTrigger,
   } from "$lib/components/ui/context-menu";
-  import type { SearchMatchPayload, Submatch } from "$lib/types";
+  import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "$lib/components/ui/dropdown-menu";
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
   import { RESULTS_PER_PAGE } from "$lib/constants";
-  import { infinite_scroll } from "$lib/attachments";
+  import type { SearchMatchPayload, Submatch } from "$lib/types";
+  import LocateFixed from "@lucide/svelte/icons/locate-fixed";
+  import MoreHorizontal from "@lucide/svelte/icons/more-horizontal";
   import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
+  import { toast } from "svelte-sonner";
 
   type TextSegment = {
     text: string;
@@ -34,6 +35,7 @@
     select_result,
     shown_count = $bindable(0),
     total_count = $bindable(0),
+    data_root = "",
   }: {
     results?: SearchMatchPayload[];
     open_result: (path: string, line_number?: number) => void;
@@ -41,6 +43,7 @@
     select_result: (r: SearchMatchPayload) => void;
     shown_count?: number;
     total_count?: number;
+    data_root?: string;
   } = $props();
 
   let render_count = $state(RESULTS_PER_PAGE);
@@ -153,15 +156,40 @@
   }
 
   // os actions for dropdown menu
+  function is_abs(p: string) {
+    return p.startsWith("/") || /^[A-Za-z]:[\\\/]/.test(p);
+  }
+  function resolve_fs_path(p: string) {
+    if (is_abs(p)) return p;
+    const root = data_root || "";
+    if (!root) return p;
+    const sep = root.includes("\\") ? "\\" : "/";
+    const base = root.endsWith(sep) ? root.slice(0, -1) : root;
+    const rel = p.replace(/^([\\/])+/, "");
+    return `${base}${sep}${rel}`;
+  }
+
   async function open_in_os_path(path: string) {
     try {
-      await openPath(path);
-    } catch {}
+      await openPath(resolve_fs_path(path));
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error("فشل فتح الملف: " + msg);
+      if (msg.toLowerCase().includes("not allowed")) {
+        // degrade gracefully: show in folder if policy blocks opening
+        try {
+          await reveal_in_os_path(path);
+        } catch {}
+      }
+    }
   }
   async function reveal_in_os_path(path: string) {
     try {
-      await revealItemInDir(path);
-    } catch {}
+      await revealItemInDir(resolve_fs_path(path));
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error("فشل إظهار الملف في المجلد: " + msg);
+    }
   }
 
   function open_at_line(e: Event, r: SearchMatchPayload) {

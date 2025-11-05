@@ -1,28 +1,25 @@
 <script lang="ts">
   import FileViewerDialog from "$lib/components/FileViewerDialog.svelte";
   import InlineFilePreview from "$lib/components/InlineFilePreview.svelte";
-  import {
-    Menubar,
-    MenubarMenu,
-    MenubarTrigger,
-    MenubarContent,
-    MenubarItem,
-    MenubarSeparator,
-  } from "$lib/components/ui/menubar";
-  import {
-    CommandDialog,
-    CommandInput,
-    CommandList,
-    CommandGroup,
-    CommandItem,
-    CommandEmpty,
-  } from "$lib/components/ui/command";
-  import { toast } from "svelte-sonner";
   import ResultsList from "$lib/components/ResultsList.svelte";
   import SearchPanel from "$lib/components/SearchPanel.svelte";
-
-  import { ResizablePaneGroup, ResizablePane, ResizableHandle } from "$lib/components/ui/resizable";
-  import { userPrefersMode, setMode, resetMode } from "mode-watcher";
+  import {
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+  } from "$lib/components/ui/command";
+  import {
+    Menubar,
+    MenubarContent,
+    MenubarItem,
+    MenubarMenu,
+    MenubarSeparator,
+    MenubarTrigger,
+  } from "$lib/components/ui/menubar";
+  import { ResizableHandle, ResizablePane, ResizablePaneGroup } from "$lib/components/ui/resizable";
   import { FILE_FILTERS, MAX_RESULTS } from "$lib/constants";
   import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
   import { with_current } from "$lib/search-events";
@@ -30,7 +27,9 @@
   import type { UnlistenFn } from "@tauri-apps/api/event";
   import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
+  import { resetMode, setMode, userPrefersMode } from "mode-watcher";
   import { onMount } from "svelte";
+  import { toast } from "svelte-sonner";
 
   import type { SearchCompletePayload, SearchErrorPayload, SearchMatchPayload, SearchStartedPayload } from "$lib/types";
 
@@ -495,6 +494,7 @@
                 select_result={handle_select_result}
                 bind:shown_count
                 bind:total_count
+                {data_root}
               />
             {/key}
           </section>
