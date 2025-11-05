@@ -10,7 +10,13 @@
   } from "$lib/components/ui/dropdown-menu";
   import LocateFixed from "@lucide/svelte/icons/locate-fixed";
   import MoreHorizontal from "@lucide/svelte/icons/more-horizontal";
-  import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuSeparator } from "$lib/components/ui/context-menu";
+  import {
+    ContextMenu,
+    ContextMenuTrigger,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+  } from "$lib/components/ui/context-menu";
   import type { SearchMatchPayload, Submatch } from "$lib/types";
   import { RESULTS_PER_PAGE } from "$lib/constants";
   import { infinite_scroll } from "$lib/attachments";
@@ -44,7 +50,7 @@
   $effect(() => {
     shown_count = visible_results.length;
     total_count = results.length;
-  })
+  });
 
   function load_more() {
     render_count = Math.min(render_count + RESULTS_PER_PAGE, results.length);
@@ -199,21 +205,44 @@
               >
                 <TableCell class="px-3 py-2" dir="ltr">
                   <div class="flex min-w-0 items-center justify-between gap-2" dir="ltr">
-                    <Button variant="link" class="px-0 text-sm truncate" onclick={() => open_result(result.path)}>{result.path}</Button>
+                    <Button variant="link" class="px-0 text-sm truncate" onclick={() => open_result(result.path)}
+                      >{result.path}</Button
+                    >
                     <div class="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" aria-label="افتح عند السطر" title="افتح عند السطر" onclick={e => open_at_line(e, result)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="افتح عند السطر"
+                        title="افتح عند السطر"
+                        onclick={e => open_at_line(e, result)}
+                      >
                         <LocateFixed class="size-4" />
                       </Button>
                       <DropdownMenu>
-                        <DropdownMenuTrigger class="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted" aria-label="المزيد" title="المزيد" onclick={e => e.stopPropagation()}>
+                        <DropdownMenuTrigger
+                          class="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted"
+                          aria-label="المزيد"
+                          title="المزيد"
+                          onclick={e => e.stopPropagation()}
+                        >
                           <MoreHorizontal class="size-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="min-w-40" onkeydown={e => e.stopPropagation()}>
                           <DropdownMenuItem onclick={() => copy_path(result)}>نسخ المسار</DropdownMenuItem>
-                          <DropdownMenuItem onclick={() => { open_in_os_path(result.path) }}>فتح الملف</DropdownMenuItem>
-                          <DropdownMenuItem onclick={() => { reveal_in_os_path(result.path) }}>إظهار في المجلد</DropdownMenuItem>
+                          <DropdownMenuItem
+                            onclick={() => {
+                              open_in_os_path(result.path);
+                            }}>فتح الملف</DropdownMenuItem
+                          >
+                          <DropdownMenuItem
+                            onclick={() => {
+                              reveal_in_os_path(result.path);
+                            }}>إظهار في المجلد</DropdownMenuItem
+                          >
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onclick={() => open_result(result.path, result.line_number)}>افتح عند السطر</DropdownMenuItem>
+                          <DropdownMenuItem onclick={() => open_result(result.path, result.line_number)}
+                            >افتح عند السطر</DropdownMenuItem
+                          >
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -226,7 +255,11 @@
                   {/if}
                   <div class="overflow-x-auto whitespace-pre rounded bg-accent/30 p-2" dir="auto">
                     {#each build_segments(result) as segment, i (i)}
-                      <span class={'rounded px-1 py-0.5 ' + (segment.highlighted ? 'bg-yellow-200 dark:bg-yellow-700 dark:text-yellow-50' : '')}>{segment.text}</span>
+                      <span
+                        class={"rounded px-1 py-0.5 " +
+                          (segment.highlighted ? "bg-yellow-200 dark:bg-yellow-700 dark:text-yellow-50" : "")}
+                        >{segment.text}</span
+                      >
                     {/each}
                   </div>
                   {#if result.context_after}
@@ -238,10 +271,20 @@
             </ContextMenuTrigger>
             <ContextMenuContent class="min-w-40" onkeydown={e => e.stopPropagation()}>
               <ContextMenuItem onclick={() => copy_path(result)}>نسخ المسار</ContextMenuItem>
-              <ContextMenuItem onclick={() => { open_in_os_path(result.path) }}>فتح الملف</ContextMenuItem>
-              <ContextMenuItem onclick={() => { reveal_in_os_path(result.path) }}>إظهار في المجلد</ContextMenuItem>
+              <ContextMenuItem
+                onclick={() => {
+                  open_in_os_path(result.path);
+                }}>فتح الملف</ContextMenuItem
+              >
+              <ContextMenuItem
+                onclick={() => {
+                  reveal_in_os_path(result.path);
+                }}>إظهار في المجلد</ContextMenuItem
+              >
               <ContextMenuSeparator />
-              <ContextMenuItem onclick={() => open_result(result.path, result.line_number)}>افتح عند السطر</ContextMenuItem>
+              <ContextMenuItem onclick={() => open_result(result.path, result.line_number)}
+                >افتح عند السطر</ContextMenuItem
+              >
             </ContextMenuContent>
           </ContextMenu>
         {/each}

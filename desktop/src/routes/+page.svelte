@@ -22,7 +22,7 @@
   import SearchPanel from "$lib/components/SearchPanel.svelte";
 
   import { ResizablePaneGroup, ResizablePane, ResizableHandle } from "$lib/components/ui/resizable";
-  import { userPrefersMode, setMode, resetMode } from 'mode-watcher'
+  import { userPrefersMode, setMode, resetMode } from "mode-watcher";
   import { FILE_FILTERS, MAX_RESULTS } from "$lib/constants";
   import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
   import { with_current } from "$lib/search-events";
@@ -108,10 +108,15 @@
             searching = true;
             search_complete = false;
             search_error = "";
-            if (_timer) { clearInterval(_timer); _timer = null }
+            if (_timer) {
+              clearInterval(_timer);
+              _timer = null;
+            }
             const start = Date.now();
             elapsed_ms = 0;
-            _timer = setInterval(() => { elapsed_ms = Date.now() - start }, 100) as unknown as number;
+            _timer = setInterval(() => {
+              elapsed_ms = Date.now() - start;
+            }, 100) as unknown as number;
           })
         )
       );
@@ -131,7 +136,10 @@
           only_current(payload => {
             search_error = payload.error;
             searching = false;
-            if (_timer) { clearInterval(_timer); _timer = null }
+            if (_timer) {
+              clearInterval(_timer);
+              _timer = null;
+            }
           })
         )
       );
@@ -142,7 +150,10 @@
           only_current(_ => {
             searching = false;
             search_complete = true;
-            if (_timer) { clearInterval(_timer); _timer = null }
+            if (_timer) {
+              clearInterval(_timer);
+              _timer = null;
+            }
           })
         )
       );
@@ -342,16 +353,16 @@
   }
 
   function format_elapsed(ms: number) {
-    if (!ms || ms < 0) return '0ms'
-    const s = Math.floor(ms / 1000)
-    const rem = ms % 1000
+    if (!ms || ms < 0) return "0ms";
+    const s = Math.floor(ms / 1000);
+    const rem = ms % 1000;
     if (s >= 60) {
-      const m = Math.floor(s / 60)
-      const ss = s % 60
-      return `${m}m ${ss}s`
+      const m = Math.floor(s / 60);
+      const ss = s % 60;
+      return `${m}m ${ss}s`;
     }
-    if (s > 0) return `${s}.${String(Math.floor(rem/100)).padStart(1,'0')}s`
-    return `${ms}ms`
+    if (s > 0) return `${s}.${String(Math.floor(rem / 100)).padStart(1, "0")}s`;
+    return `${ms}ms`;
   }
 
   let prev_filter_key = $state("");
@@ -385,140 +396,142 @@
 <main class="h-svh w-full bg-muted/10">
   <div class="flex min-w-0 w-full p-4 h-full">
     <div class="flex-1 min-h-0 min-w-0 overflow-x-hidden space-y-4 flex flex-col">
-        <div class="flex items-end justify-between text-right">
-          <div class="flex items-end gap-3">
-            <div>
-              <h1 class="text-2xl font-bold">باحث الصغير</h1>
-            </div>
+      <div class="flex items-end justify-between text-right">
+        <div class="flex items-end gap-3">
+          <div>
+            <h1 class="text-2xl font-bold">باحث الصغير</h1>
           </div>
         </div>
+      </div>
 
-        <Menubar>
-          <MenubarMenu>
-            <MenubarTrigger>ملف</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem onclick={choose_root}>فتح مجلد</MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-          <MenubarMenu>
-            <MenubarTrigger>تحرير</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem
-                onclick={() => {
-                  query = "";
-                  handle_query_input();
-                }}>مسح البحث</MenubarItem
-              >
-            </MenubarContent>
-          </MenubarMenu>
-          <MenubarMenu>
-            <MenubarTrigger>عرض</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem onclick={() => (preview_wrap = !preview_wrap)}>تبديل التفاف السطور</MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem onclick={() => (preview_font_px = Math.max(11, preview_font_px - 1))}>تصغير الخط</MenubarItem>
-              <MenubarItem onclick={() => (preview_font_px = Math.min(28, preview_font_px + 1))}>تكبير الخط</MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem onclick={() => setMode('light')}>{userPrefersMode.current === 'light' ? '✓ ' : ''}الوضع الفاتح</MenubarItem>
-              <MenubarItem onclick={() => setMode('dark')}>{userPrefersMode.current === 'dark' ? '✓ ' : ''}الوضع الداكن</MenubarItem>
-              <MenubarItem onclick={() => resetMode()}>{userPrefersMode.current === 'system' ? '✓ ' : ''}مطابق للنظام</MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-          <MenubarMenu>
-            <MenubarTrigger>مساعدة</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem
-                onclick={() => {
-                  try {
-                    import("@tauri-apps/plugin-opener").then(m => m.openUrl(help_url));
-                  } catch {}
-                }}>الدليل</MenubarItem
-              >
-            </MenubarContent>
-          </MenubarMenu>
-        </Menubar>
-
-        <div class="rounded border bg-background">
-          <SearchPanel
-            bind:directory_search
-            {directories}
-            {directories_loading}
-            {directories_error}
-            bind:selected_directory
-            bind:file_filter
-            bind:query
-            {data_root}
-            {search_hint}
-            {search_error}
-            {handle_directory_search}
-            {handle_directory_focus}
-            {handle_directory_value_change}
-            {handle_file_filter_change}
-            {handle_query_input}
-            on_enter={() => start_search()}
-          />
-        </div>
-
-        <ResizablePaneGroup direction="horizontal" class="w-full flex-1 min-h-0 rounded border">
-          <ResizablePane class="min-w-0" defaultSize={60} minSize={35}>
-            <section class="h-full min-w-0 space-y-4 overflow-y-auto overflow-x-hidden p-3">
-              {#if !trimmed_query}
-                <p class="text-right text-sm text-muted-foreground">ابدأ بكتابة عبارة البحث لعرض النتائج.</p>
-              {:else if !results.length && searching}
-                <p class="text-right text-sm text-muted-foreground">جارٍ جمع النتائج...</p>
-              {:else if !results.length && search_complete}
-                <p class="text-right text-sm text-muted-foreground">لم يتم العثور على نتائج مطابقة.</p>
-              {/if}
-
-              {#key current_request_id}
-                <ResultsList
-                  {results}
-                  {open_result}
-                  {selected_key}
-                  select_result={handle_select_result}
-                  bind:shown_count
-                  bind:total_count
-                />
-              {/key}
-            </section>
-          </ResizablePane>
-          <ResizableHandle withHandle />
-          <ResizablePane class="min-w-0" defaultSize={40} minSize={25}>
-            <section class="h-full min-w-0 overflow-hidden rounded bg-background p-4 text-right">
-              <InlineFilePreview
-                file={preview_file}
-                lines={preview_lines}
-                line_number={preview_line_number}
-                loading={preview_loading}
-                error={preview_error}
-                bind:wrap={preview_wrap}
-                bind:font_px={preview_font_px}
-              />
-            </section>
-          </ResizablePane>
-        </ResizablePaneGroup>
-
-        <footer class="flex items-center justify-between rounded border bg-background px-3 py-2 text-xs text-muted-foreground">
-          <div class="flex items-center gap-2">
-            <span
-              >{searching
-                ? "جارٍ البحث..."
-                : search_error
-                  ? "فشل البحث"
-                  : search_complete
-                    ? "انتهى البحث"
-                    : "جاهز"}</span
+      <Menubar>
+        <MenubarMenu>
+          <MenubarTrigger>ملف</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem onclick={choose_root}>فتح مجلد</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+        <MenubarMenu>
+          <MenubarTrigger>تحرير</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem
+              onclick={() => {
+                query = "";
+                handle_query_input();
+              }}>مسح البحث</MenubarItem
             >
-            {#if search_error}
-              <span class="text-destructive">{search_error}</span>
+          </MenubarContent>
+        </MenubarMenu>
+        <MenubarMenu>
+          <MenubarTrigger>عرض</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem onclick={() => (preview_wrap = !preview_wrap)}>تبديل التفاف السطور</MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem onclick={() => (preview_font_px = Math.max(11, preview_font_px - 1))}>تصغير الخط</MenubarItem>
+            <MenubarItem onclick={() => (preview_font_px = Math.min(28, preview_font_px + 1))}>تكبير الخط</MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem onclick={() => setMode("light")}
+              >{userPrefersMode.current === "light" ? "✓ " : ""}الوضع الفاتح</MenubarItem
+            >
+            <MenubarItem onclick={() => setMode("dark")}
+              >{userPrefersMode.current === "dark" ? "✓ " : ""}الوضع الداكن</MenubarItem
+            >
+            <MenubarItem onclick={() => resetMode()}
+              >{userPrefersMode.current === "system" ? "✓ " : ""}مطابق للنظام</MenubarItem
+            >
+          </MenubarContent>
+        </MenubarMenu>
+        <MenubarMenu>
+          <MenubarTrigger>مساعدة</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem
+              onclick={() => {
+                try {
+                  import("@tauri-apps/plugin-opener").then(m => m.openUrl(help_url));
+                } catch {}
+              }}>الدليل</MenubarItem
+            >
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+
+      <div class="rounded border bg-background">
+        <SearchPanel
+          bind:directory_search
+          {directories}
+          {directories_loading}
+          {directories_error}
+          bind:selected_directory
+          bind:file_filter
+          bind:query
+          {data_root}
+          {search_hint}
+          {search_error}
+          {handle_directory_search}
+          {handle_directory_focus}
+          {handle_directory_value_change}
+          {handle_file_filter_change}
+          {handle_query_input}
+          on_enter={() => start_search()}
+        />
+      </div>
+
+      <ResizablePaneGroup direction="horizontal" class="w-full flex-1 min-h-0 rounded border">
+        <ResizablePane class="min-w-0" defaultSize={60} minSize={35}>
+          <section class="h-full min-w-0 space-y-4 overflow-y-auto overflow-x-hidden p-3">
+            {#if !trimmed_query}
+              <p class="text-right text-sm text-muted-foreground">ابدأ بكتابة عبارة البحث لعرض النتائج.</p>
+            {:else if !results.length && searching}
+              <p class="text-right text-sm text-muted-foreground">جارٍ جمع النتائج...</p>
+            {:else if !results.length && search_complete}
+              <p class="text-right text-sm text-muted-foreground">لم يتم العثور على نتائج مطابقة.</p>
             {/if}
-          </div>
-          <div class="flex items-center gap-3" dir="ltr">
-            <span>showing {shown_count} of {total_count}</span>
-            <span>|</span>
-            <span>elapsed: {format_elapsed(elapsed_ms)}</span>
-          </div>
-        </footer>
+
+            {#key current_request_id}
+              <ResultsList
+                {results}
+                {open_result}
+                {selected_key}
+                select_result={handle_select_result}
+                bind:shown_count
+                bind:total_count
+              />
+            {/key}
+          </section>
+        </ResizablePane>
+        <ResizableHandle withHandle />
+        <ResizablePane class="min-w-0" defaultSize={40} minSize={25}>
+          <section class="h-full min-w-0 overflow-hidden rounded bg-background p-4 text-right">
+            <InlineFilePreview
+              file={preview_file}
+              lines={preview_lines}
+              line_number={preview_line_number}
+              loading={preview_loading}
+              error={preview_error}
+              bind:wrap={preview_wrap}
+              bind:font_px={preview_font_px}
+            />
+          </section>
+        </ResizablePane>
+      </ResizablePaneGroup>
+
+      <footer
+        class="flex items-center justify-between rounded border bg-background px-3 py-2 text-xs text-muted-foreground"
+      >
+        <div class="flex items-center gap-2">
+          <span
+            >{searching ? "جارٍ البحث..." : search_error ? "فشل البحث" : search_complete ? "انتهى البحث" : "جاهز"}</span
+          >
+          {#if search_error}
+            <span class="text-destructive">{search_error}</span>
+          {/if}
+        </div>
+        <div class="flex items-center gap-3" dir="ltr">
+          <span>showing {shown_count} of {total_count}</span>
+          <span>|</span>
+          <span>elapsed: {format_elapsed(elapsed_ms)}</span>
+        </div>
+      </footer>
     </div>
   </div>
 </main>
@@ -534,15 +547,27 @@
 
 <CommandDialog bind:open={cmd_open}>
   <div class="text-right">
-    <CommandInput placeholder="ابحث عن أمر..." oninput={(e: any) => { cmd_query = e?.currentTarget?.value ?? '' }} />
+    <CommandInput
+      placeholder="ابحث عن أمر..."
+      oninput={(e: any) => {
+        cmd_query = e?.currentTarget?.value ?? "";
+      }}
+    />
   </div>
   <CommandList>
     <CommandEmpty>لا توجد أوامر مطابقة.</CommandEmpty>
     <CommandGroup heading="بحث">
       {#if (cmd_query || query).trim()}
-        <CommandItem value={`ابحث: ${(cmd_query || query)}`}
-          onclick={() => { query = (cmd_query || query); handle_query_input(); cmd_open = false; start_search() }}>
-          ابحث: {(cmd_query || query)}
+        <CommandItem
+          value={`ابحث: ${cmd_query || query}`}
+          onclick={() => {
+            query = cmd_query || query;
+            handle_query_input();
+            cmd_open = false;
+            start_search();
+          }}
+        >
+          ابحث: {cmd_query || query}
         </CommandItem>
       {/if}
     </CommandGroup>
