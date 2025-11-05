@@ -19,12 +19,10 @@
   } from "$lib/components/ui/command";
   import { toast } from "svelte-sonner";
   import ResultsList from "$lib/components/ResultsList.svelte";
-  import SearchInput from "$lib/components/SearchInput.svelte";
   import SearchPanel from "$lib/components/SearchPanel.svelte";
 
-  import { Button } from "$lib/components/ui/button";
   import { ResizablePaneGroup, ResizablePane, ResizableHandle } from "$lib/components/ui/resizable";
-  import { mode, setMode, resetMode } from 'mode-watcher'
+  import { userPrefersMode, setMode, resetMode } from 'mode-watcher'
   import { FILE_FILTERS, MAX_RESULTS } from "$lib/constants";
   import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
   import { with_current } from "$lib/search-events";
@@ -79,16 +77,8 @@
 
   let initialized = $state(false);
 
-  const root_hint = $derived(data_root ? `المجلد الحالي: ${data_root}` : "لم يتم اختيار مجلد البيانات بعد");
   const trimmed_query = $derived(query.trim());
   const can_search = $derived(!!trimmed_query && !!selected_directory);
-  const directory_hint = $derived(
-    directories_loading
-      ? "جاري تحميل المجلدات..."
-      : directories.length
-        ? "اختر مجلداً للبحث بداخله"
-        : "لم يتم العثور على مجلدات مطابقة"
-  );
   const search_hint = $derived(
     search_error
       ? ""
@@ -394,18 +384,14 @@
   });
 </script>
 
-<main class="h-svh w-full bg-muted/10" dir="rtl">
+<main class="h-svh w-full bg-muted/10">
   <div class="flex min-w-0 w-full p-4 h-full">
     <div class="flex-1 min-h-0 min-w-0 overflow-x-hidden space-y-4 flex flex-col">
         <div class="flex items-end justify-between text-right">
           <div class="flex items-end gap-3">
             <div>
               <h1 class="text-2xl font-bold">باحث الصغير</h1>
-              <p class="text-sm text-muted-foreground">{root_hint}</p>
             </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <Button variant="outline" size="sm" onclick={choose_root}>تغيير مجلد البيانات</Button>
           </div>
         </div>
 
@@ -413,7 +399,7 @@
           <MenubarMenu>
             <MenubarTrigger>ملف</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem onclick={choose_root}>تغيير الجذر</MenubarItem>
+              <MenubarItem onclick={choose_root}>فتح مجلد</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -435,9 +421,9 @@
               <MenubarItem onclick={() => (preview_font_px = Math.max(11, preview_font_px - 1))}>تصغير الخط</MenubarItem>
               <MenubarItem onclick={() => (preview_font_px = Math.min(20, preview_font_px + 1))}>تكبير الخط</MenubarItem>
               <MenubarSeparator />
-              <MenubarItem onclick={() => setMode('light')}>{mode.current === 'light' ? '✓ ' : ''}الوضع الفاتح</MenubarItem>
-              <MenubarItem onclick={() => setMode('dark')}>{mode.current === 'dark' ? '✓ ' : ''}الوضع الداكن</MenubarItem>
-              <MenubarItem onclick={() => resetMode()}>{mode.current === 'system' ? '✓ ' : ''}مطابق للنظام</MenubarItem>
+              <MenubarItem onclick={() => setMode('light')}>{userPrefersMode.current === 'light' ? '✓ ' : ''}الوضع الفاتح</MenubarItem>
+              <MenubarItem onclick={() => setMode('dark')}>{userPrefersMode.current === 'dark' ? '✓ ' : ''}الوضع الداكن</MenubarItem>
+              <MenubarItem onclick={() => resetMode()}>{userPrefersMode.current === 'system' ? '✓ ' : ''}مطابق للنظام</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -463,7 +449,7 @@
             bind:selected_directory
             bind:file_filter
             bind:query
-            {directory_hint}
+            {data_root}
             {search_hint}
             {search_error}
             {handle_directory_search}

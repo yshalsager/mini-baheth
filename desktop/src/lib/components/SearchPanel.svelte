@@ -14,7 +14,7 @@
     selected_directory = $bindable(''),
     file_filter = $bindable(FILE_FILTERS[0]),
     query = $bindable(''),
-    directory_hint = '',
+    data_root = '',
     search_hint = '',
     search_error = '',
     handle_directory_search,
@@ -31,7 +31,7 @@
     selected_directory?: string
     file_filter?: string
     query?: string
-    directory_hint?: string
+    data_root?: string
     search_hint?: string
     search_error?: string
     handle_directory_search: () => void
@@ -41,9 +41,13 @@
     handle_query_input: () => void
     on_enter: () => void
   } = $props()
+
+  const root_hint = $derived(data_root ? `المجلد الحالي: \n‎${data_root}` : "لم يتم اختيار مجلد البيانات بعد");
+
 </script>
 
 <CardContent class='space-y-6 py-4'>
+  <p class="text-sm text-muted-foreground select-none whitespace-pre-wrap">{root_hint}</p>
   <div class='grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]'>
     <DirectoryPicker
       bind:directory_search
