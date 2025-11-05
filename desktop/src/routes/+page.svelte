@@ -304,9 +304,21 @@
     el?.focus();
   }
   const commands = $derived([
-    { id: "change-root", label: "تغيير مجلد البيانات", run: choose_root },
-    { id: "focus-query", label: "التركيز على البحث", run: focus_query },
-    { id: "focus-results", label: "التركيز على النتائج", run: focus_results },
+    { id: "open-folder", label: "فتح مجلد", run: choose_root },
+    {
+      id: "reset-folder-filter",
+      label: "إعادة تعيين مرشح المجلدات",
+      run: () => {
+        directory_search = "";
+        void (async () => {
+          const prev = selected_directory;
+          await refresh_directories("");
+          const next = directories[0] ?? "";
+          if (next !== prev) selected_directory = next;
+          if (trimmed_query) void start_search();
+        })();
+      },
+    },
     {
       id: "clear-query",
       label: "مسح البحث",
@@ -321,6 +333,18 @@
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         cmd_open = true;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "o") {
+        e.preventDefault();
+        choose_root();
+      }
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === "/") {
+        const t = e.target as HTMLElement | null;
+        const tag = t?.tagName;
+        if (tag !== "INPUT" && tag !== "TEXTAREA" && !(t as any)?.isContentEditable) {
+          e.preventDefault();
+          focus_query();
+        }
       }
       if (e.altKey && (e.key === "+" || e.key === "=")) preview_font_px = Math.min(20, preview_font_px + 1);
       if (e.altKey && e.key === "-") preview_font_px = Math.max(11, preview_font_px - 1);
@@ -395,7 +419,7 @@
 <main class="h-svh w-full bg-muted/10">
   <div class="flex min-w-0 w-full p-4 h-full">
     <div class="flex-1 min-h-0 min-w-0 overflow-x-hidden space-y-4 flex flex-col">
-      <div class="flex items-end justify-between text-right">
+      <div class="flex items-end justify-between text-start">
         <div class="flex items-end gap-3">
           <div>
             <h1 class="text-2xl font-bold">باحث الصغير</h1>
@@ -479,11 +503,11 @@
         <ResizablePane class="min-w-0" defaultSize={60} minSize={35}>
           <section class="h-full min-w-0 space-y-4 overflow-y-auto overflow-x-hidden p-3">
             {#if !trimmed_query}
-              <p class="text-right text-sm text-muted-foreground">ابدأ بكتابة عبارة البحث لعرض النتائج.</p>
+              <p class="text-start text-sm text-muted-foreground">ابدأ بكتابة عبارة البحث لعرض النتائج.</p>
             {:else if !results.length && searching}
-              <p class="text-right text-sm text-muted-foreground">جارٍ جمع النتائج...</p>
+              <p class="text-start text-sm text-muted-foreground">جارٍ جمع النتائج...</p>
             {:else if !results.length && search_complete}
-              <p class="text-right text-sm text-muted-foreground">لم يتم العثور على نتائج مطابقة.</p>
+              <p class="text-start text-sm text-muted-foreground">لم يتم العثور على نتائج مطابقة.</p>
             {/if}
 
             {#key current_request_id}
@@ -501,7 +525,7 @@
         </ResizablePane>
         <ResizableHandle withHandle />
         <ResizablePane class="min-w-0" defaultSize={40} minSize={25}>
-          <section class="h-full min-w-0 overflow-hidden rounded bg-background p-4 text-right">
+          <section class="h-full min-w-0 overflow-hidden rounded bg-background p-4 text-start">
             <InlineFilePreview
               file={preview_file}
               lines={preview_lines}
@@ -526,10 +550,10 @@
             <span class="text-destructive">{search_error}</span>
           {/if}
         </div>
-        <div class="flex items-center gap-3" dir="ltr">
-          <span>showing {shown_count} of {total_count}</span>
+        <div class="flex items-center gap-3">
+          <span>تعرض {shown_count} من {total_count} نتيجة</span>
           <span>|</span>
-          <span>elapsed: {format_elapsed(elapsed_ms)}</span>
+          <span>مدة البحث: {format_elapsed(elapsed_ms)}</span>
         </div>
       </footer>
     </div>
@@ -546,7 +570,7 @@
 />
 
 <CommandDialog bind:open={cmd_open}>
-  <div class="text-right">
+  <div class="text-start">
     <CommandInput
       placeholder="ابحث عن أمر..."
       oninput={(e: any) => {
