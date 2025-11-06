@@ -3,7 +3,7 @@ name = "mini-baheth"
 version = "1.0.0"
 description = "Ripgrep Web UI"
 readme = "README.md"
-requires-python = ">=3.14,<3.15"
+requires-python = ">=3.13.8,<3.13.9"
 dependencies = [
     "granian[reload, rloop]>=2.5.5,<3",
     "nanodjango>=0.12.2",
