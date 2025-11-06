@@ -8,10 +8,14 @@ dependencies = []
 dev = ["mini-baheth"]
 
 [tool.uv.workspace]
-members = ["src-tauri"]
+members = [
+  "src-tauri",
+  "../core",
+]
 
 [tool.uv.sources]
 mini-baheth = { workspace = true }
+mini-baheth-core = { workspace = true }
 
 
 [tool.pyright]

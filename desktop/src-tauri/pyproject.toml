@@ -10,7 +10,8 @@ requires-python = ">=3.9"
 dependencies = [
     "pytauri == 0.8.*",
     "pydantic == 2.*",
-    "anyio == 4.*"
+    "anyio == 4.*",
+    "mini-baheth-core"
 ]
 
 [project.entry-points.pytauri]
