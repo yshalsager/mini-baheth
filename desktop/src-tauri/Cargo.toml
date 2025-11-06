@@ -32,3 +32,9 @@ pytauri = { version = "0.8", features = [] }
 tauri-plugin-pytauri = { version = "0.8" } # required for pytauri IPC
 tauri-plugin-dialog = "2"
 tauri-plugin-opener = "2"
+
+[profile.bundle-dev]
+inherits = "dev"
+
+[profile.bundle-release]
+inherits = "release"
