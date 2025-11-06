@@ -10,7 +10,8 @@
       "dmg"
     ],
     "resources": {
-      "pyembed/python": "./"
+      "pyembed/python": "./",
+      "bin": "bin"
     }
   }
 }

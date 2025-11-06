@@ -4,8 +4,10 @@ import asyncio
 import logging
 import os
 import subprocess
+import sys
 import time
 from collections.abc import AsyncGenerator, Iterable
+from contextlib import suppress
 from pathlib import Path
 from shutil import which
 from typing import Any
@@ -62,6 +64,20 @@ def _normalize_directory(directory: str, data_dir: Path) -> str:
     return str(resolved.relative_to(data_dir))
 
 
+def _find_tool(tool: str) -> str | None:
+    if found := which(tool):
+        return found
+    with suppress(Exception):
+        exe = Path(sys.executable).resolve()
+        for p in exe.parents:
+            if p.name == 'Resources' and p.is_dir():
+                cand = p / 'bin' / tool
+                if cand.exists() and os.access(cand, os.X_OK):
+                    return str(cand)
+                break
+    return None
+
+
 def build_search_command(
     query: str,
     directory: str,
@@ -70,7 +86,7 @@ def build_search_command(
     rga_config: Path | None = None,
 ) -> list[str]:
     tool = 'rga' if file_filter in RGA_FILE_FILTERS else 'rg'
-    binary = which(tool)
+    binary = _find_tool(tool)
     if not binary:
         raise FileNotFoundError(f'{tool} not found on PATH')
 

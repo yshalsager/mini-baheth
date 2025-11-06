@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import asyncio
 import sys
+from contextlib import suppress
+from os import environ, pathsep
 from pathlib import Path
+from uuid import uuid4
 
 from anyio.from_thread import start_blocking_portal
 from pydantic import BaseModel
@@ -13,11 +16,21 @@ from pytauri import (
     builder_factory,
     context_factory,
 )
-from uuid import uuid4
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+# ensure bundled binaries are on PATH when launched from Finder
+with suppress(Exception):
+    exe = Path(sys.executable).resolve()
+    for p in exe.parents:
+        if p.name == 'Resources' and p.is_dir():
+            bin_dir = p / 'bin'
+            if bin_dir.exists():
+                current = environ.get('PATH', '')
+                environ['PATH'] = str(bin_dir) + (pathsep + current if current else '')
+            break
 
 from core import (  # noqa: E402
     ResultStreamProcessor,

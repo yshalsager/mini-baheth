@@ -13,11 +13,14 @@ export RUSTFLAGS=" \
     -C link-arg=-Wl,-rpath,@executable_path/../Resources/lib \
     -L $PYLIB_DIR"
 
+./scripts/macos/download-rg.sh || true
+
 uv pip install \
     --exact \
     --compile-bytecode \
     --python="$PYO3_PYTHON" \
     --reinstall-package="$PROJECT_NAME" \
+    --reinstall-package="mini-baheth-core" \
     ./src-tauri
 
 pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release
