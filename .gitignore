@@ -24,6 +24,7 @@ db.sqlite3
 static/
 static-collected/
 tmp/*
+tmp_*
 
 # PyTauri
 desktop/src-tauri/pyembed/
