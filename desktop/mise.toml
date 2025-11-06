@@ -5,3 +5,7 @@ node = "24"
 
 [tasks.dev]
 run = "pnpm tauri dev"
+
+[tasks.'build:macos']
+dir = "scripts/macos"
+run = "./build.sh"
