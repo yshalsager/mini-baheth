@@ -23,7 +23,7 @@
   import { FILE_FILTERS, MAX_RESULTS } from "$lib/constants";
   import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
   import { with_current } from "$lib/search-events";
-  import { debounce } from "$lib/utils";
+  import { debounce, prep_query } from "$lib/utils";
   import type { UnlistenFn } from "@tauri-apps/api/event";
   import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
@@ -247,7 +247,8 @@
     searching = true;
 
     try {
-      await search_api({ query: trimmed_query, directory: selected_directory, file_filter, request_id });
+      const pattern = prep_query(trimmed_query).source;
+      await search_api({ query: pattern, directory: selected_directory, file_filter, request_id });
     } catch (error) {
       if (current_request_id !== request_id) return;
       search_error = error instanceof Error ? error.message : String(error);
@@ -295,14 +296,12 @@
         preview_loading = false;
       });
   }
+
   function focus_query() {
     const el = document?.getElementById("query") as HTMLInputElement | null;
     el?.focus();
   }
-  function focus_results() {
-    const el = document?.getElementById("results-grid") as HTMLElement | null;
-    el?.focus();
-  }
+
   const commands = $derived([
     { id: "open-folder", label: "فتح مجلد", run: choose_root },
     {
