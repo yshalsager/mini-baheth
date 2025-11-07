@@ -91,6 +91,9 @@ def build_search_command(
 ) -> list[str]:
     tool = 'rga' if file_filter in RGA_FILE_FILTERS else 'rg'
     binary = _find_tool(tool)
+    if not binary and tool == 'rga':
+        tool = 'rg'
+        binary = _find_tool(tool)
     if not binary:
         raise FileNotFoundError(f'{tool} not found on PATH')
 

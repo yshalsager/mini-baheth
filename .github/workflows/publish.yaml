@@ -40,11 +40,21 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup mise and install tools
+      - name: Setup mise and install tools (non-ARM64)
+        if: ${{ !contains(matrix.target, 'aarch64') }}
         uses: jdx/mise-action@v3
         with:
           working_directory: ..
           install: true
+
+      - name: Setup mise and install tools (ARM64-safe)
+        if: contains(matrix.target, 'aarch64')
+        uses: jdx/mise-action@v3
+        with:
+          working_directory: ..
+          install: true
+          install_args: |
+            python aqua:astral-sh/uv aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc
 
       - name: Setup mise (desktop runtime tools)
         uses: jdx/mise-action@v3
