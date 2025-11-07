@@ -69,6 +69,7 @@ jobs:
         with:
           node-version: lts/*
           cache: pnpm
+          cache-dependency-path: desktop/pnpm-lock.yaml
 
       - name: Install project dependencies
         run: pnpm install
@@ -81,19 +82,10 @@ jobs:
         if: runner.os == 'Linux'
         run: ./scripts/linux/download-py.sh
 
-      - name: Install ripgrep (Linux)
-        if: runner.os == 'Linux'
-        run: bash ./scripts/linux/download-rg.sh
-
       - name: Download embedded Python (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: .\scripts\windows\download-py.ps1
-
-      - name: Install ripgrep (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: .\scripts\windows\download-rg.ps1
 
       - name: Build bundle (macOS)
         if: runner.os == 'macOS'
@@ -114,7 +106,7 @@ jobs:
         with:
           script: |
             const fs = require('fs')
-            const p = 'src-tauri/tauri.conf.json'
+            const p = 'desktop/src-tauri/tauri.conf.json'
             const cfg = JSON.parse(fs.readFileSync(p, 'utf8'))
             core.setOutput('version', cfg.version)
 
@@ -128,4 +120,4 @@ jobs:
           draft: true
           fail_on_unmatched_files: false
           files: |
-            target/**/bundle/**
+            desktop/target/**/bundle/**
