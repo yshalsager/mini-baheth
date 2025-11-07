@@ -13,9 +13,9 @@ export RUSTFLAGS=" \
     -C link-arg=-Wl,-rpath,\$ORIGIN/../lib/$PROJECT_NAME/lib \
     -L $PYLIB_DIR"
 
-bash ./scripts/linux/download-rg.sh || true
+mise x uv -- uv run ./scripts/stage-tools.py || true
 
-uv pip install \
+mise x uv -- uv pip install \
     --exact \
     --compile-bytecode \
     --python="$PYO3_PYTHON" \
@@ -23,4 +23,4 @@ uv pip install \
     --reinstall-package="mini-baheth-core" \
     ./src-tauri
 
-pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release
+mise x pnpm -- pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release

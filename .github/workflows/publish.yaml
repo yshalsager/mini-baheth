@@ -40,39 +40,26 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Setup mise and install tools
+        uses: jdx/mise-action@v3
+        with:
+          working_directory: ..
+          install: true
+
+      - name: Setup mise (desktop runtime tools)
+        uses: jdx/mise-action@v3
+        with:
+          working_directory: desktop
+          install: true
+
       - name: Install system dependencies (ubuntu only)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          enable-cache: true
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: pnpm
-          cache-dependency-path: desktop/pnpm-lock.yaml
-
       - name: Install project dependencies
-        run: pnpm install
+        run: mise x pnpm -- pnpm install
 
       - name: Download embedded Python (macOS)
         if: runner.os == 'macOS'

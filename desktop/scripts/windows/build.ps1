@@ -5,9 +5,9 @@ $PROJECT_NAME = "mini-baheth"
 $env:PYTAURI_STANDALONE = "1"
 $env:PYO3_PYTHON = (Resolve-Path -LiteralPath "src-tauri\pyembed\python\python.exe").Path
 
-& .\scripts\windows\download-rg.ps1
+mise.exe x uv -- uv run .\scripts\stage-tools.py
 
-uv.exe pip install `
+mise.exe x uv -- uv.exe pip install `
     --exact `
     --compile-bytecode `
     --python="$env:PYO3_PYTHON" `
@@ -15,4 +15,4 @@ uv.exe pip install `
     --reinstall-package="mini-baheth-core" `
     .\src-tauri
 
-pnpm -- tauri build --config="src-tauri\tauri.bundle.json" -- --profile bundle-release
+mise.exe x pnpm -- pnpm -- tauri build --config="src-tauri\tauri.bundle.json" -- --profile bundle-release
