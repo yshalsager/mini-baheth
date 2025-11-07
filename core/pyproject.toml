@@ -7,3 +7,11 @@ requires-python = ">=3.13"
 dependencies = [
   "orjson>=3.11.4,<4",
 ]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["core"]
+package-dir = { core = "." }

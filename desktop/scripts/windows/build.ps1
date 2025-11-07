@@ -12,6 +12,7 @@ uv.exe pip install `
     --compile-bytecode `
     --python="$env:PYO3_PYTHON" `
     --reinstall-package="$PROJECT_NAME" `
+    --reinstall-package="mini-baheth-core" `
     .\src-tauri
 
 pnpm -- tauri build --config="src-tauri\tauri.bundle.json" -- --profile bundle-release
