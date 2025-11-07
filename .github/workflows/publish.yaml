@@ -1,0 +1,131 @@
+# See:
+# - https://github.com/tauri-apps/tauri-action
+# - https://pytauri.github.io/pytauri/latest/usage/tutorial/build-standalone/
+
+name: publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+
+defaults:
+  run:
+    shell: bash
+    working-directory: desktop
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-13
+            target: x86_64-apple-darwin
+          - platform: macos-14
+            target: aarch64-apple-darwin
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - platform: ubuntu-22.04-arm
+            target: aarch64-unknown-linux-gnu
+          - platform: windows-2022
+            target: x86_64-pc-windows-msvc
+          - platform: windows-11-arm
+            target: aarch64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install system dependencies (ubuntu only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Download embedded Python (macOS)
+        if: runner.os == 'macOS'
+        run: ./scripts/macos/download-py.sh
+
+      - name: Download embedded Python (Linux)
+        if: runner.os == 'Linux'
+        run: ./scripts/linux/download-py.sh
+
+      - name: Install ripgrep (Linux)
+        if: runner.os == 'Linux'
+        run: bash ./scripts/linux/download-rg.sh
+
+      - name: Download embedded Python (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\scripts\windows\download-py.ps1
+
+      - name: Install ripgrep (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\scripts\windows\download-rg.ps1
+
+      - name: Build bundle (macOS)
+        if: runner.os == 'macOS'
+        run: ./scripts/macos/build.sh
+
+      - name: Build bundle (Linux)
+        if: runner.os == 'Linux'
+        run: ./scripts/linux/build.sh
+
+      - name: Build bundle (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\scripts\windows\build.ps1
+
+      - name: Read app version
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            const p = 'src-tauri/tauri.conf.json'
+            const cfg = JSON.parse(fs.readFileSync(p, 'utf8'))
+            core.setOutput('version', cfg.version)
+
+      - name: Create/Update GitHub Release and upload artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: v${{ steps.get_version.outputs.version }}
+          body: See the assets to download this version and install.
+          draft: true
+          fail_on_unmatched_files: false
+          files: |
+            target/**/bundle/**
