@@ -21,6 +21,7 @@ mise x uv -- uv pip install \
     --python="$PYO3_PYTHON" \
     --reinstall-package="$PROJECT_NAME" \
     --reinstall-package="mini-baheth-core" \
+    ../core \
     ./src-tauri
 
 mise x pnpm -- pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release
