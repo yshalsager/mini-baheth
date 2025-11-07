@@ -12,7 +12,14 @@ if [ -x "$BIN_DIR/rg" ]; then
 fi
 
 RG_VERSION="14.1.1"
-TARBALL="ripgrep-${RG_VERSION}-aarch64-apple-darwin.tar.gz"
+ARCH=$(uname -m)
+case "$ARCH" in
+  x86_64) TARGET_ARCH="x86_64-apple-darwin" ;;
+  arm64|aarch64) TARGET_ARCH="aarch64-apple-darwin" ;;
+  *) echo "unsupported arch: $ARCH"; exit 1 ;;
+esac
+
+TARBALL="ripgrep-${RG_VERSION}-${TARGET_ARCH}.tar.gz"
 URL="https://github.com/BurntSushi/ripgrep/releases/download/${RG_VERSION}/${TARBALL}"
 
 TMPDIR="$(mktemp -d)"
@@ -21,9 +28,8 @@ trap 'rm -rf "$TMPDIR"' EXIT
 curl -L "$URL" -o "$TMPDIR/$TARBALL"
 tar -xzf "$TMPDIR/$TARBALL" -C "$TMPDIR"
 
-SRC_DIR="$TMPDIR/ripgrep-${RG_VERSION}-aarch64-apple-darwin"
+SRC_DIR="$TMPDIR/ripgrep-${RG_VERSION}-${TARGET_ARCH}"
 cp "$SRC_DIR/rg" "$BIN_DIR/rg"
 chmod +x "$BIN_DIR/rg"
 
 echo "rg installed to $BIN_DIR/rg"
-
