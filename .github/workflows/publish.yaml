@@ -91,6 +91,16 @@ jobs:
         if: runner.os == 'macOS'
         run: ./scripts/macos/build.sh
 
+      - name: Zip macOS .app bundle
+        if: runner.os == 'macOS'
+        run: |
+          shopt -s nullglob
+          for app in target/**/bundle/macos/*.app; do
+            zip="${app%.*}.zip"
+            echo "Zipping $app -> $zip"
+            ditto -c -k --sequesterRsrc --keepParent "$app" "$zip"
+          done
+
       - name: Build bundle (Linux)
         if: runner.os == 'Linux'
         run: ./scripts/linux/build.sh
@@ -120,4 +130,9 @@ jobs:
           draft: true
           fail_on_unmatched_files: false
           files: |
-            desktop/target/**/bundle/**
+            desktop/target/**/bundle/dmg/*.dmg
+            desktop/target/**/bundle/macos/*.zip
+            desktop/target/**/bundle/msi/*.msi
+            desktop/target/**/bundle/nsis/*.exe
+            desktop/target/**/bundle/deb/*.deb
+            desktop/target/**/bundle/rpm/*.rpm
