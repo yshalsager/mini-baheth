@@ -61,6 +61,7 @@ jobs:
         with:
           working_directory: desktop
           install: true
+          install_args: "rust node pnpm"
 
       - name: Install system dependencies (ubuntu only)
         if: runner.os == 'Linux'
