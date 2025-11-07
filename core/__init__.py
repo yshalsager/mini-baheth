@@ -71,9 +71,13 @@ def _find_tool(tool: str) -> str | None:
         exe = Path(sys.executable).resolve()
         for p in exe.parents:
             if p.name == 'Resources' and p.is_dir():
-                cand = p / 'bin' / tool
-                if cand.exists() and os.access(cand, os.X_OK):
-                    return str(cand)
+                base = p / 'bin' / tool
+                cands = [base]
+                if sys.platform == 'win32':
+                    cands.insert(0, base.with_name(f'{tool}.exe'))
+                for cand in cands:
+                    if cand.exists() and os.access(cand, os.X_OK):
+                        return str(cand)
                 break
     return None
 
