@@ -13,6 +13,8 @@ export RUSTFLAGS=" \
     -C link-arg=-Wl,-rpath,\$ORIGIN/../lib/$PROJECT_NAME/lib \
     -L $PYLIB_DIR"
 
+bash ./scripts/linux/download-rg.sh || true
+
 uv pip install \
     --exact \
     --compile-bytecode \
