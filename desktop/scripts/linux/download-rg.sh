@@ -11,11 +11,11 @@ if [ -x "$BIN_DIR/rg" ]; then
   exit 0
 fi
 
-RG_VERSION="14.1.1"
+RG_VERSION="15.1.0"
 ARCH=$(uname -m)
 case "$ARCH" in
   x86_64) TARGET_ARCH="x86_64-unknown-linux-musl" ;;
-  aarch64|arm64) TARGET_ARCH="aarch64-unknown-linux-musl" ;;
+  aarch64|arm64) TARGET_ARCH="aarch64-unknown-linux-gnu" ;;
   *) echo "unsupported arch: $ARCH"; exit 1 ;;
 esac
 
@@ -33,4 +33,3 @@ cp "$SRC_DIR/rg" "$BIN_DIR/rg"
 chmod +x "$BIN_DIR/rg"
 
 echo "rg installed to $BIN_DIR/rg"
-

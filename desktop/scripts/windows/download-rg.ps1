@@ -8,7 +8,7 @@ New-Item -ItemType Directory -Force -Path $binDir | Out-Null
 
 if (Test-Path "$binDir\rg.exe") { exit 0 }
 
-$rgVersion = '14.1.1'
+$rgVersion = '15.1.0'
 
 $arch = $env:PROCESSOR_ARCHITECTURE
 switch -Regex ($arch) {
@@ -33,4 +33,3 @@ finally {
 }
 
 Write-Output "rg installed to $binDir\rg.exe"
-

@@ -3,7 +3,7 @@ experimental_monorepo_root = true
 [tools]
 python = "3.13.8"
 "aqua:astral-sh/uv" = '0.9'
-"aqua:BurntSushi/ripgrep" = '14.1.1'
+"aqua:BurntSushi/ripgrep" = '15.1.0'
 "aqua:phiresky/ripgrep-all" = '0.10.9'
 "aqua:tomnomnom/gron" = '0.7.1'
 "github:jgm/pandoc" = '3.8'

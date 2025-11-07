@@ -11,7 +11,7 @@ if [ -x "$BIN_DIR/rg" ]; then
   exit 0
 fi
 
-RG_VERSION="14.1.1"
+RG_VERSION="15.1.0"
 ARCH=$(uname -m)
 case "$ARCH" in
   x86_64) TARGET_ARCH="x86_64-apple-darwin" ;;
