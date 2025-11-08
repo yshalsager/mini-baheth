@@ -81,9 +81,9 @@ jobs:
         shell: pwsh
         run: mise.exe x uv -- uv.exe run .\scripts\download_python.py
 
-      - name: Build bundle (macOS)
-        if: runner.os == 'macOS'
-        run: ./scripts/macos/build.sh
+      - name: Build bundle (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: mise x uv -- uv run ./scripts/build_app.py
 
       - name: Zip macOS .app bundle
         if: runner.os == 'macOS'
@@ -95,14 +95,10 @@ jobs:
             ditto -c -k --sequesterRsrc --keepParent "$app" "$zip"
           done
 
-      - name: Build bundle (Linux)
-        if: runner.os == 'Linux'
-        run: ./scripts/linux/build.sh
-
       - name: Build bundle (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: .\scripts\windows\build.ps1
+        run: mise.exe x uv -- uv.exe run .\scripts\build_app.py
 
       - name: Read app version
         id: get_version
