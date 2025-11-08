@@ -1,19 +1,24 @@
 <script lang="ts">
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import { Button } from "$lib/components/ui/button";
+  import { Input } from '$lib/components/ui/input'
+  import { Label } from '$lib/components/ui/label'
+  import { Button } from '$lib/components/ui/button'
+  import { Toggle } from '$lib/components/ui/toggle'
+  import RegexIcon from '@lucide/svelte/icons/regex'
+  import XIcon from '@lucide/svelte/icons/x'
 
   let {
     query = $bindable(""),
     search_hint = "",
     search_error = "",
     handle_query_input,
-    on_enter,
+    regex = $bindable(false),
+  on_enter,
   }: {
     query?: string;
     search_hint?: string;
     search_error?: string;
     handle_query_input: () => void;
+    regex?: boolean;
     on_enter: () => void;
   } = $props();
 </script>
@@ -29,15 +34,28 @@
       onkeydown={e => e.key === "Enter" && on_enter()}
       dir="auto"
     />
+    <Toggle
+      aria-label="Regex"
+      title="Regex"
+      bind:pressed={regex}
+      onclick={handle_query_input}
+      class="h-9 min-w-9"
+    >
+      <RegexIcon />
+    </Toggle>
     {#if query}
       <Button
+        aria-label="Clear"
+        title="Clear"
         variant="outline"
         size="sm"
         onclick={() => {
           query = "";
           handle_query_input();
-        }}>مسح</Button
+        }}
       >
+        <XIcon />
+      </Button>
     {/if}
   </div>
   {#if search_hint}

@@ -42,6 +42,7 @@
   let file_filters = $state<string[]>([FILE_FILTERS[0]]);
 
   let query = $state("");
+  let regex = $state(false);
   let search_error = $state("");
   let searching = $state(false);
   let search_complete = $state(false);
@@ -247,7 +248,8 @@
     searching = true;
 
     try {
-      const pattern = prep_query(trimmed_query).source;
+      const pattern = regex ? trimmed_query : prep_query(trimmed_query).source;
+      console.log(pattern)
       await search_api({ query: pattern, directory: selected_directory, file_filters, request_id });
     } catch (error) {
       if (current_request_id !== request_id) return;
@@ -486,6 +488,7 @@
           {directories_error}
           bind:selected_directory
           bind:file_filters
+          bind:regex
           bind:query
           {data_root}
           {search_hint}

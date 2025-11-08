@@ -13,30 +13,33 @@
   } = $props();
 
   function toggle(value: string) {
-    const set = new Set(file_filters);
     if (value === 'all') {
-      file_filters = ['all'];
-    } else {
-      if (set.has('all')) set.delete('all');
-      if (set.has(value)) set.delete(value)
-      else set.add(value)
-      file_filters = Array.from(set);
+      file_filters = ['all']
+      handle_file_filter_change(file_filters)
+      return
     }
-    handle_file_filter_change(file_filters);
+    let arr = file_filters.filter(v => v !== 'all')
+    const i = arr.indexOf(value)
+    if (i >= 0) arr = [...arr.slice(0, i), ...arr.slice(i + 1)]
+    else arr = [...arr, value]
+    file_filters = arr
+    handle_file_filter_change(file_filters)
   }
 
-  const summary = $derived(() => {
-    if (!file_filters?.length) return '—'
-    if (file_filters.includes('all')) return 'الكل'
-    return file_filters.map(v => v.replace('*.','')).join(', ')
-  })
+  const summary = $derived(
+    !file_filters?.length
+      ? '—'
+      : file_filters.includes('all')
+        ? 'الكل'
+        : file_filters.map(v => v.replace('*.', '')).join(', ')
+  )
 </script>
 
 <div class="space-y-2">
   <Label for="file-filter-trigger">نوع الملف</Label>
   <DropdownMenu>
     <DropdownMenuTrigger id="file-filter-trigger" class="w-full rounded border px-2 py-1 text-sm text-end">
-      {summary()}
+      {summary}
     </DropdownMenuTrigger>
     <DropdownMenuContent class="w-56">
       {#each options as option (option)}

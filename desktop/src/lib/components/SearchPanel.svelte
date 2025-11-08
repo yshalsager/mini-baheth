@@ -13,6 +13,7 @@
     directories_error = "",
     selected_directory = $bindable(""),
     file_filters = $bindable<string[]>([FILE_FILTERS[0]]),
+    regex = $bindable(false),
     query = $bindable(""),
     data_root = "",
     search_hint = "",
@@ -31,6 +32,7 @@
     selected_directory?: string;
     file_filters?: string[];
     query?: string;
+    regex?: boolean;
     data_root?: string;
     search_hint?: string;
     search_error?: string;
@@ -63,5 +65,5 @@
 
   <Separator />
 
-  <SearchInput bind:query {search_hint} {search_error} {handle_query_input} {on_enter} />
+  <SearchInput bind:query bind:regex {search_hint} {search_error} {handle_query_input} {on_enter} />
 </CardContent>
