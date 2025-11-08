@@ -15,13 +15,16 @@ export RUSTFLAGS=" \
 
 mise x uv -- uv run ./scripts/stage-tools.py || true
 
-mise x uv -- uv pip install \
+# Build a wheel for core to avoid editable installs in the bundle
+mise x uv -- uv build ../core
+CORE_WHEEL="$(ls -t ../core/dist/mini_baheth_core-*.whl | head -n1)"
+
+UV_PIP_NO_SOURCES=1 mise x uv -- uv pip install \
     --exact \
     --compile-bytecode \
     --python="$PYO3_PYTHON" \
     --reinstall-package="$PROJECT_NAME" \
-    --reinstall-package="mini-baheth-core" \
-    ../core \
+    "$CORE_WHEEL" \
     ./src-tauri
 
-mise x pnpm -- pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release
+mise x node pnpm -- pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release

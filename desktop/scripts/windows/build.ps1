@@ -7,13 +7,17 @@ $env:PYO3_PYTHON = (Resolve-Path -LiteralPath "src-tauri\pyembed\python\python.e
 
 mise.exe x uv -- uv run .\scripts\stage-tools.py
 
+# Build a wheel for core to avoid editable installs in the bundle
+$env:UV_PIP_NO_SOURCES = "1"
+mise.exe x uv -- uv build ..\core
+$CORE_WHEEL = (Get-ChildItem -Path "..\core\dist" -Filter "mini_baheth_core-*.whl" | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
+
 mise.exe x uv -- uv.exe pip install `
     --exact `
     --compile-bytecode `
     --python="$env:PYO3_PYTHON" `
     --reinstall-package="$PROJECT_NAME" `
-    --reinstall-package="mini-baheth-core" `
-    ..\core `
+    "$CORE_WHEEL" `
     .\src-tauri
 
-mise.exe x pnpm -- pnpm -- tauri build --config="src-tauri\tauri.bundle.json" -- --profile bundle-release
+mise.exe x node pnpm -- pnpm tauri build --config="src-tauri\tauri.bundle.json" -- --profile bundle-release
