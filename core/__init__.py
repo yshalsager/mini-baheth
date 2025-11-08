@@ -154,12 +154,14 @@ class ResultStreamProcessor:
             assert self.proc.stdout is not None
             async for line in self.proc.stdout:
                 try:
-                    result = orjson.loads(line.decode())
+                    # Prefer parsing bytes directly; if decoding fails, fall back with replacement
+                    try:
+                        result = orjson.loads(line)
+                    except orjson.JSONDecodeError:
+                        # tolerate occasional invalid utf-8 in tool output (e.g., truncated multibyte)
+                        result = orjson.loads(line.decode('utf-8', errors='replace'))
                 except orjson.JSONDecodeError as exc:
                     logging.error('JSON decode error: %s', exc)
-                    continue
-                except Exception as exc:  # noqa: BLE001
-                    logging.error('Error decoding search output: %s', exc)
                     continue
 
                 match_type = result.get('type')
