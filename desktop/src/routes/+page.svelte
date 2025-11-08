@@ -423,8 +423,9 @@
     <div class="flex-1 min-h-0 min-w-0 overflow-x-hidden space-y-4 flex flex-col">
       <div class="flex items-end justify-between text-start">
         <div class="flex items-end gap-3">
-          <div>
-            <h1 class="text-2xl font-bold">باحث الصغير</h1>
+          <div class="flex items-center gap-2">
+            <img src="/logo.svg" alt="mini-baheth" class="h-8 w-8" />
+            <span class="sr-only">mini-baheth</span>
           </div>
         </div>
       </div>

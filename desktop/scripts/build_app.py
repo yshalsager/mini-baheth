@@ -109,6 +109,15 @@ def main(argv: list[str]) -> int:
         env=env,
     )
 
+    # Optionally refresh platform icons from SVG if present
+    svg = root / 'src-tauri' / 'icons' / 'source.svg'
+    if svg.exists():
+        try:
+            # Generate platform icons next to tauri.conf.json
+            run(['mise', 'x', 'pnpm', '--', 'pnpm', 'tauri', 'icon', str(svg), '-o', 'src-tauri/icons'])
+        except Exception:
+            pass
+
     # Build tauri bundle
     if platform.system().lower() == 'windows' and platform.machine().lower() in {
         'arm64',
