@@ -34,4 +34,4 @@ UV_PIP_NO_SOURCES=1 mise x uv -- uv pip install --no-sources \
     --reinstall-package="$PROJECT_NAME" \
     ./src-tauri
 
-mise x node pnpm -- pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release
+mise x pnpm -- pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release

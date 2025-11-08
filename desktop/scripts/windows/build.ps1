@@ -27,7 +27,7 @@ mise.exe x uv -- uv.exe pip install --no-sources `
     --reinstall-package="$PROJECT_NAME" `
     .\src-tauri
 
-$arch = $env:PROCESSOR_ARCHITECTURE
+$arch = $enpnpmOR_ARCHITECTURE
 if ($arch -eq 'ARM64') {
   mise.exe x node pnpm -- pnpm dlx @tauri-apps/cli-win32-arm64-msvc tauri build --config="src-tauri\tauri.bundle.json" -- --profile bundle-release
 } else {
