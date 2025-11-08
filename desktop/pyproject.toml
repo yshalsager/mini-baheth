@@ -5,7 +5,7 @@ requires-python = ">=3.9"
 dependencies = []
 
 [dependency-groups]
-dev = ["mini-baheth"]
+dev = ["mini-baheth-desktop"]
 
 [tool.uv.workspace]
 members = [
@@ -14,7 +14,7 @@ members = [
 ]
 
 [tool.uv.sources]
-mini-baheth = { workspace = true }
+mini-baheth-desktop = { workspace = true }
 mini-baheth-core = { workspace = true }
 
 

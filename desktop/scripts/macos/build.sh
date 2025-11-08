@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "$0")/../.."
 
-PROJECT_NAME="mini-baheth"
+PROJECT_NAME="mini-baheth-desktop"
 PYLIB_DIR="$(realpath src-tauri/pyembed/python/lib)"
 
 export PYTAURI_STANDALONE="1"

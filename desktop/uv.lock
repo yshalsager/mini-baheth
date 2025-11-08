@@ -4,8 +4,8 @@ requires-python = ">=3.13"
 
 [manifest]
 members = [
-    "mini-baheth",
     "mini-baheth-core",
+    "mini-baheth-desktop",
     "workspace",
 ]
 
@@ -53,7 +53,18 @@ wheels = [
 ]
 
 [[package]]
-name = "mini-baheth"
+name = "mini-baheth-core"
+version = "0.1.0"
+source = { editable = "../core" }
+dependencies = [
+    { name = "orjson" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "orjson", specifier = ">=3.11.4,<4" }]
+
+[[package]]
+name = "mini-baheth-desktop"
 version = "0.1.0"
 source = { editable = "src-tauri" }
 dependencies = [
@@ -70,17 +81,6 @@ requires-dist = [
     { name = "pydantic", specifier = "==2.*" },
     { name = "pytauri", specifier = "==0.8.*" },
 ]
-
-[[package]]
-name = "mini-baheth-core"
-version = "0.1.0"
-source = { editable = "../core" }
-dependencies = [
-    { name = "orjson" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "orjson", specifier = ">=3.11.4,<4" }]
 
 [[package]]
 name = "orjson"
@@ -295,13 +295,13 @@ source = { virtual = "." }
 
 [package.dev-dependencies]
 dev = [
-    { name = "mini-baheth" },
+    { name = "mini-baheth-desktop" },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [{ name = "mini-baheth", editable = "src-tauri" }]
+dev = [{ name = "mini-baheth-desktop", editable = "src-tauri" }]
 
 [[package]]
 name = "zipp"

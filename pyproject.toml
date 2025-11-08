@@ -8,6 +8,7 @@ dependencies = [
     "granian[reload, rloop]>=2.5.5,<3",
     "nanodjango>=0.12.2",
     "orjson>=3.11.4",
+    "mini-baheth-core",
 ]
 
 [dependency-groups]
