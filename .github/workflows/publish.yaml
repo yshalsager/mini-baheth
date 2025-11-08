@@ -40,28 +40,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup mise and install tools (non-ARM64)
-        if: ${{ !contains(matrix.target, 'aarch64') }}
-        uses: jdx/mise-action@v3
-        with:
-          working_directory: ..
-          install: true
+      - name: Disable unsupported tools on Windows ARM64
+        if: runner.os == 'Windows' && contains(matrix.target, 'aarch64')
+        run: |
+          cat > .mise.local.toml <<'EOF'
+          [settings]
+          auto_install_disable_tools = ['pandoc','ripgrep-all']
+          EOF
 
-      - name: Setup mise and install tools (ARM64-safe)
-        if: contains(matrix.target, 'aarch64')
-        uses: jdx/mise-action@v3
-        with:
-          working_directory: ..
-          install: true
-          install_args: |
-            python aqua:astral-sh/uv aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc
-
-      - name: Setup mise (desktop runtime tools)
+      - name: Setup mise (desktop-only)
         uses: jdx/mise-action@v3
         with:
           working_directory: desktop
           install: true
-          install_args: "rust pnpm"
 
       - name: Install system dependencies (ubuntu only)
         if: runner.os == 'Linux'
