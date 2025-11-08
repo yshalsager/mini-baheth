@@ -29,3 +29,9 @@ line-length = 100
 quote-style = "single"
 indent-style = "space"
 line-ending = "lf"
+
+[tool.uv.workspace]
+members = ["core"]
+
+[tool.uv.sources]
+mini-baheth-core = { workspace = true }

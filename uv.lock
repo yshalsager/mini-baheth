@@ -2,6 +2,12 @@ version = 1
 revision = 3
 requires-python = ">=3.13.8, <3.13.9"
 
+[manifest]
+members = [
+    "mini-baheth",
+    "mini-baheth-core",
+]
+
 [[package]]
 name = "annotated-types"
 version = "0.7.0"
@@ -193,6 +199,7 @@ version = "1.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "granian", extra = ["reload", "rloop"] },
+    { name = "mini-baheth-core" },
     { name = "nanodjango" },
     { name = "orjson" },
 ]
@@ -208,6 +215,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "granian", extras = ["reload", "rloop"], specifier = ">=2.5.5,<3" },
+    { name = "mini-baheth-core", editable = "core" },
     { name = "nanodjango", specifier = ">=0.12.2" },
     { name = "orjson", specifier = ">=3.11.4" },
 ]
@@ -219,6 +227,17 @@ dev = [
     { name = "pytest-django", specifier = ">=4.11.1" },
     { name = "ruff", specifier = ">=0.14.2" },
 ]
+
+[[package]]
+name = "mini-baheth-core"
+version = "0.1.0"
+source = { editable = "core" }
+dependencies = [
+    { name = "orjson" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "orjson", specifier = ">=3.11.4,<4" }]
 
 [[package]]
 name = "mypy-extensions"
