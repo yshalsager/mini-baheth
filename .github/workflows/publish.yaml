@@ -72,18 +72,14 @@ jobs:
       - name: Install project dependencies
         run: mise x pnpm -- pnpm install
 
-      - name: Download embedded Python (macOS)
-        if: runner.os == 'macOS'
-        run: ./scripts/macos/download-py.sh
-
-      - name: Download embedded Python (Linux)
-        if: runner.os == 'Linux'
-        run: ./scripts/linux/download-py.sh
+      - name: Download embedded Python (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: mise x uv -- uv run ./scripts/download_python.py
 
       - name: Download embedded Python (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: .\scripts\windows\download-py.ps1
+        run: mise.exe x uv -- uv.exe run .\scripts\download_python.py
 
       - name: Build bundle (macOS)
         if: runner.os == 'macOS'
