@@ -1,6 +1,6 @@
 # Mini Baheth
 
-A simple, self-hosted web UI for searching through text files using `ripgrep` and `ripgrep-all`.
+A simple, self-hosted web UI and desktop app for searching through text files using `ripgrep` and `ripgrep-all`.
 
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
@@ -28,6 +28,7 @@ A simple, self-hosted web UI for searching through text files using `ripgrep` an
 - Search: ripgrep (rg), ripgrep-all (rga)
 - Frontend: HTML, Tailwind CSS (via CDN), htmx
 - Packaging & Runtime: Docker, uv
+- Desktop: Tauri + PyTauri (embedded Python)
 
 ## Setup
 
@@ -116,6 +117,26 @@ cp docker-compose.override.yml.example docker-compose.override.yml
 *   `docker-compose.yml`: Defines the Docker Compose service for development/basic deployment.
 *   `docker-compose.override.yml.example`: Example override for Traefik integration.
 *   `pyproject.toml`: Project metadata and Python dependencies (managed by `uv`).
+
+## Desktop App
+
+Build a native desktop app with embedded Python.
+
+- Install deps
+  - In `desktop/`: `mise x pnpm -- pnpm install`
+- Download embedded Python (first time only)
+  - In `desktop/`: `mise x uv -- uv run ./scripts/download_python.py`
+- Build
+  - In `desktop/`: `mise r //desktop:build`
+
+Artifacts
+- macOS: `desktop/target/bundle-release/bundle/macos/mini-baheth.app`
+- Windows: `.msi`/`.exe` under `desktop/target/**/bundle`
+- Linux: `.deb`/`.rpm` under `desktop/target/**/bundle`
+
+Notes
+- Bundles include the `core` package and staged tools (`rg`, `rga`, `rga-preproc`, `gron`, `pandoc`).
+- If `rga.config.json` exists at repo root, it’s bundled and used automatically for `rga` searches.
 
 ## Acknowledgements
 
