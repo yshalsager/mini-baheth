@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class SearchRequest(BaseModel):
     query: str
     directory: str = '.'
-    file_filter: str = ''
+    file_filters: list[str] = Field(default_factory=list)
     request_id: str | None = None
 
 

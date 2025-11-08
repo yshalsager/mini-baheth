@@ -52,15 +52,19 @@ def index(request):
 
 
 @app.api.get('/search')
-async def search(request: StreamingHttpResponse, query: str, directory: str, file_filter: str):
+async def search(request: StreamingHttpResponse, query: str, directory: str, file_filter: str | None = None):
     if not query:
         return ''
 
     try:
+        # Accept multiple file_filter parameters and/or comma-separated values
+        filters = request.GET.getlist('file_filter') if hasattr(request, 'GET') else []
+        if not filters and file_filter:
+            filters = [p.strip() for p in file_filter.split(',') if p.strip()]
         processor = stream_search(
             query,
             directory,
-            file_filter,
+            filters,
             DATA_DIR,
             RGA_CONFIG_PATH if RGA_CONFIG_PATH.exists() else None,
         )

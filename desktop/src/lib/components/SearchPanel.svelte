@@ -12,7 +12,7 @@
     directories_loading = false,
     directories_error = "",
     selected_directory = $bindable(""),
-    file_filter = $bindable(FILE_FILTERS[0]),
+    file_filters = $bindable<string[]>([FILE_FILTERS[0]]),
     query = $bindable(""),
     data_root = "",
     search_hint = "",
@@ -29,7 +29,7 @@
     directories_loading?: boolean;
     directories_error?: string;
     selected_directory?: string;
-    file_filter?: string;
+    file_filters?: string[];
     query?: string;
     data_root?: string;
     search_hint?: string;
@@ -37,7 +37,7 @@
     handle_directory_search: () => void;
     handle_directory_focus: () => void;
     handle_directory_value_change: (value: string) => void;
-    handle_file_filter_change: (value: string) => void;
+    handle_file_filter_change: (values: string[]) => void;
     handle_query_input: () => void;
     on_enter: () => void;
   } = $props();
@@ -58,7 +58,7 @@
       {handle_directory_focus}
       {handle_directory_value_change}
     />
-    <FileFilterSelect bind:file_filter options={FILE_FILTERS} {handle_file_filter_change} />
+    <FileFilterSelect bind:file_filters options={FILE_FILTERS} {handle_file_filter_change} />
   </div>
 
   <Separator />

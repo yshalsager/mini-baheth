@@ -65,23 +65,20 @@ def test_search_stream_emits_matches_and_completion(client, temp_data_dir, monke
             )
             yield SearchComplete()
 
-    def fake_stream_search(query, directory, file_filter, data_dir, rga_config):
-        calls.append((query, directory, file_filter, data_dir))
+    def fake_stream_search(query, directory, file_filters, data_dir, rga_config):
+        calls.append((query, directory, file_filters, data_dir))
         return FakeProcessor()
 
     monkeypatch.setattr(webapp_module, 'stream_search', fake_stream_search)
 
-    response = client.get(
-        '/api/search',
-        {'query': 'term', 'directory': '.', 'file_filter': '*.txt'},
-    )
+    response = client.get('/api/search', {'query': 'term', 'directory': '.', 'file_filter': '*.txt'})
 
     async def collect(gen):
         return [chunk async for chunk in gen]
 
     chunks = asyncio.run(collect(response.streaming_content))
 
-    assert calls == [('term', '.', '*.txt', temp_data_dir)]
+    assert calls == [('term', '.', ['*.txt'], temp_data_dir)]
     assert chunks[0].startswith(b'data:')
     assert b'"path":"notes.txt"' in chunks[0]
     assert b'"complete":true' in chunks[-1]

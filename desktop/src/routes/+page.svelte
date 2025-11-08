@@ -39,7 +39,7 @@
   let directories_loading = $state(false);
   let directories_error = $state("");
   let selected_directory = $state("");
-  let file_filter = $state(FILE_FILTERS[0]);
+  let file_filters = $state<string[]>([FILE_FILTERS[0]]);
 
   let query = $state("");
   let search_error = $state("");
@@ -248,7 +248,7 @@
 
     try {
       const pattern = prep_query(trimmed_query).source;
-      await search_api({ query: pattern, directory: selected_directory, file_filter, request_id });
+      await search_api({ query: pattern, directory: selected_directory, file_filters, request_id });
     } catch (error) {
       if (current_request_id !== request_id) return;
       search_error = error instanceof Error ? error.message : String(error);
@@ -370,8 +370,9 @@
     selected_directory = value;
   }
 
-  function handle_file_filter_change(value: string) {
-    file_filter = value;
+  function handle_file_filter_change(values: string[]) {
+    file_filters = values?.length ? values : [FILE_FILTERS[0]];
+    schedule_search();
   }
 
   function format_elapsed(ms: number) {
@@ -390,7 +391,7 @@
   let prev_filter_key = $state("");
   $effect(() => {
     if (!initialized) return;
-    const key = `${selected_directory}|${file_filter}`;
+    const key = `${selected_directory}|${file_filters.join(',')}`;
     if (key === prev_filter_key) return;
     prev_filter_key = key;
     if (!trimmed_query) return reset_results();
@@ -484,7 +485,7 @@
           {directories_loading}
           {directories_error}
           bind:selected_directory
-          bind:file_filter
+          bind:file_filters
           bind:query
           {data_root}
           {search_hint}

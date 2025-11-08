@@ -85,11 +85,14 @@ def _find_tool(tool: str) -> str | None:
 def build_search_command(
     query: str,
     directory: str,
-    file_filter: str,
+    file_filters: list[str],
     data_dir: Path,
     rga_config: Path | None = None,
 ) -> list[str]:
-    tool = 'rga' if file_filter in RGA_FILE_FILTERS else 'rg'
+    filters = [f.strip() for f in (file_filters or []) if f and f.strip()]
+    use_all = any(f in {'*', 'all'} for f in filters)
+    needs_rga = use_all or any(f in RGA_FILE_FILTERS for f in filters)
+    tool = 'rga' if needs_rga else 'rg'
     binary = _find_tool(tool)
     if not binary and tool == 'rga':
         tool = 'rg'
@@ -117,9 +120,10 @@ def build_search_command(
 
     target_dir = _normalize_directory(directory, data_dir)
 
-    if file_filter:
-        pattern = f'**/{file_filter}' if target_dir == '.' else f'{target_dir}/**/{file_filter}'
-        cmd.extend(['-g', pattern])
+    if filters and not use_all:
+        for f in filters:
+            pattern = f'**/{f}' if target_dir == '.' else f'{target_dir}/**/{f}'
+            cmd.extend(['-g', pattern])
     elif target_dir != '.':
         cmd.extend(['-g', f'{target_dir}/**'])
 
@@ -239,11 +243,11 @@ class ResultStreamProcessor:
 def stream_search(
     query: str,
     directory: str,
-    file_filter: str,
+    file_filters: list[str],
     data_dir: Path,
     rga_config: Path | None = None,
 ) -> ResultStreamProcessor:
-    command = build_search_command(query, directory, file_filter, data_dir, rga_config)
+    command = build_search_command(query, directory, file_filters, data_dir, rga_config)
     return ResultStreamProcessor(command, data_dir)
 
 

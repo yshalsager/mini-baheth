@@ -88,7 +88,7 @@ async def search(body: SearchRequest, app_handle: AppHandle) -> None:
         processor = stream_search(
             body.query,
             body.directory,
-            body.file_filter,
+            body.file_filters,
             DATA_ROOT,
             RGA_CONFIG_PATH if RGA_CONFIG_PATH.exists() else None,
         )
@@ -100,7 +100,7 @@ async def search(body: SearchRequest, app_handle: AppHandle) -> None:
         SearchStarted(
             query=body.query,
             directory=body.directory,
-            file_filter=body.file_filter,
+            file_filter=','.join(body.file_filters or []),
             request_id=request_id,
         ),
     )

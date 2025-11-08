@@ -19,19 +19,53 @@
             <select id="directory" name="directory" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right"> {% for dir in directories %} <option value="{{ dir }}">{{ dir }}</option> {% endfor %} </select>
           </div>
           <div>
-            <label for="file_filter" class="block text-sm font-medium text-gray-700 text-right">نوع الملف</label>
-            <select id="file_filter" name="file_filter" class="my-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right">
-              <option value="*.txt">txt</option>
-              <option value="*.csv">csv</option>
-              <option value="*.doc">doc</option>
-              <option value="*.docx">docx</option>
-              <option value="*.json">json</option>
-              <option value="*.md">md</option>
-              <option value="*.srt">srt</option>
-              <option value="*.vtt">vtt</option>
-              <option value="*.xml">xml</option>
-              <option value="*.html">html</option>
-            </select>
+            <label class="block text-sm font-medium text-gray-700 text-right">نوع الملف</label>
+            <div id="file_filters" class="my-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>txt</span>
+                <input type="checkbox" name="file_filter" value="*.txt" class="h-4 w-4" checked>
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>csv</span>
+                <input type="checkbox" name="file_filter" value="*.csv" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>doc</span>
+                <input type="checkbox" name="file_filter" value="*.doc" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>docx</span>
+                <input type="checkbox" name="file_filter" value="*.docx" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>json</span>
+                <input type="checkbox" name="file_filter" value="*.json" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>md</span>
+                <input type="checkbox" name="file_filter" value="*.md" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>srt</span>
+                <input type="checkbox" name="file_filter" value="*.srt" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>vtt</span>
+                <input type="checkbox" name="file_filter" value="*.vtt" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>xml</span>
+                <input type="checkbox" name="file_filter" value="*.xml" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>html</span>
+                <input type="checkbox" name="file_filter" value="*.html" class="h-4 w-4">
+              </label>
+              <label class="flex items-center justify-end gap-2 text-right">
+                <span>الكل</span>
+                <input type="checkbox" name="file_filter" value="all" class="h-4 w-4">
+              </label>
+            </div>
           </div>
           <div>
             <label for="query" class="block text-sm font-medium text-gray-700 text-right">عبارة البحث</label>
@@ -162,7 +196,9 @@
           const url = new URL('/api/search', window.location.origin);
           url.searchParams.append('query', query);
           url.searchParams.append('directory', document.getElementById('directory').value);
-          url.searchParams.append('file_filter', document.getElementById('file_filter').value);
+          const checked = Array.from(document.querySelectorAll('input[name="file_filter"]:checked')).map(i => i.value);
+          const selected = checked.includes('all') ? ['all'] : (checked.length ? checked : ['*.txt']);
+          for (const v of selected) url.searchParams.append('file_filter', v);
       
           source = new EventSource(url);
           source.onmessage = function(event) {
@@ -203,7 +239,7 @@
         const debouncedSearch = debounce(performSearch, 500);
         document.getElementById('query').addEventListener('input', debouncedSearch);
         document.getElementById('directory').addEventListener('change', performSearch);
-        document.getElementById('file_filter').addEventListener('change', performSearch);
+        document.getElementById('file_filters').addEventListener('change', performSearch);
       
         if (document.getElementById('query').value) performSearch();
       });
