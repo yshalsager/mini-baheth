@@ -40,19 +40,30 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Disable unsupported tools on Windows ARM64
-        if: runner.os == 'Windows' && contains(matrix.target, 'aarch64')
-        run: |
-          cat > .mise.local.toml <<'EOF'
-          [settings]
-          auto_install_disable_tools = ['pandoc','ripgrep-all']
-          EOF
-
-      - name: Setup mise (desktop-only)
+      - name: Setup mise (desktop, non-ARM64)
+        if: ${{ !contains(matrix.target, 'aarch64') }}
         uses: jdx/mise-action@v3
         with:
           working_directory: desktop
           install: true
+
+      - name: Setup mise (desktop, Windows ARM64)
+        if: runner.os == 'Windows' && contains(matrix.target, 'aarch64')
+        uses: jdx/mise-action@v3
+        with:
+          working_directory: desktop
+          install: true
+          install_args: |
+            python aqua:astral-sh/uv node rust aqua:tomnomnom/gron "aqua:pnpm/pnpm"
+
+      - name: Setup mise (desktop, Linux ARM64)
+        if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
+        uses: jdx/mise-action@v3
+        with:
+          working_directory: desktop
+          install: true
+          install_args: |
+            python aqua:astral-sh/uv node rust aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc "aqua:pnpm/pnpm"
 
       - name: Install system dependencies (ubuntu only)
         if: runner.os == 'Linux'
