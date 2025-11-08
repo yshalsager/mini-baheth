@@ -12,12 +12,19 @@ $env:UV_PIP_NO_SOURCES = "1"
 mise.exe x uv -- uv build ..\core
 $CORE_WHEEL = (Get-ChildItem -Path "..\core\dist" -Filter "mini_baheth_core-*.whl" | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
 
-mise.exe x uv -- uv.exe pip install `
+# 1) Install core wheel (non-editable) while ignoring workspace sources
+mise.exe x uv -- uv.exe pip install --no-sources `
+    --exact `
+    --compile-bytecode `
+    --python="$env:PYO3_PYTHON" `
+    "$CORE_WHEEL"
+
+# 2) Install the desktop package with its dependencies; core already satisfied
+mise.exe x uv -- uv.exe pip install --no-sources `
     --exact `
     --compile-bytecode `
     --python="$env:PYO3_PYTHON" `
     --reinstall-package="$PROJECT_NAME" `
-    "$CORE_WHEEL" `
     .\src-tauri
 
 mise.exe x node pnpm -- pnpm tauri build --config="src-tauri\tauri.bundle.json" -- --profile bundle-release

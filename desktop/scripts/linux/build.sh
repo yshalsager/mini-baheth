@@ -19,12 +19,19 @@ mise x uv -- uv run ./scripts/stage-tools.py || true
 mise x uv -- uv build ../core
 CORE_WHEEL="$(ls -t ../core/dist/mini_baheth_core-*.whl | head -n1)"
 
-UV_PIP_NO_SOURCES=1 mise x uv -- uv pip install \
+# 1) Install core wheel (non-editable) while ignoring workspace sources
+UV_PIP_NO_SOURCES=1 mise x uv -- uv pip install --no-sources \
+    --exact \
+    --compile-bytecode \
+    --python="$PYO3_PYTHON" \
+    "$CORE_WHEEL"
+
+# 2) Install the desktop package with its dependencies; core already satisfied
+UV_PIP_NO_SOURCES=1 mise x uv -- uv pip install --no-sources \
     --exact \
     --compile-bytecode \
     --python="$PYO3_PYTHON" \
     --reinstall-package="$PROJECT_NAME" \
-    "$CORE_WHEEL" \
     ./src-tauri
 
 mise x node pnpm -- pnpm tauri build --config="src-tauri/tauri.bundle.json" -- --profile bundle-release
