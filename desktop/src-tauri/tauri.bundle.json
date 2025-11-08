@@ -11,7 +11,8 @@
     ],
     "resources": {
       "pyembed/python": "./",
-      "bin": "bin"
+      "bin": "bin",
+      "rga.config.json": "rga.config.json"
     }
   }
 }

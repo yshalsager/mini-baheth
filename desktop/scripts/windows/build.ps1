@@ -7,17 +7,15 @@ $env:PYO3_PYTHON = (Resolve-Path -LiteralPath "src-tauri\pyembed\python\python.e
 
 mise.exe x uv -- uv run .\scripts\stage-tools.py
 
-# Build a wheel for core to avoid editable installs in the bundle
-$env:UV_PIP_NO_SOURCES = "1"
-mise.exe x uv -- uv build ..\core
-$CORE_WHEEL = (Get-ChildItem -Path "..\core\dist" -Filter "mini_baheth_core-*.whl" | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
+# Stage rga.config.json into src-tauri if present at repo root
+if (Test-Path ..\rga.config.json) { Copy-Item ..\rga.config.json src-tauri\rga.config.json -Force }
 
-# 1) Install core wheel (non-editable) while ignoring workspace sources
+# 1) Install core (non-editable) from local path while ignoring workspace sources
 mise.exe x uv -- uv.exe pip install --no-sources `
     --exact `
     --compile-bytecode `
     --python="$env:PYO3_PYTHON" `
-    "$CORE_WHEEL"
+    ..\core
 
 # 2) Install the desktop package with its dependencies; core already satisfied
 mise.exe x uv -- uv.exe pip install --no-sources `
