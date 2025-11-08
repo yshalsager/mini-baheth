@@ -201,7 +201,7 @@ class ResultStreamProcessor:
         data = result.get('data', {})
         match_payload = SearchMatch(
             path=data.get('path', {}).get('text', ''),
-            line_number=data.get('line_number', 0),
+            line_number=data.get('line_number') or 0,
             lines=data.get('lines', {}).get('text', ''),
             submatches=data.get('submatches', []),
             highlighted_text=highlight_matches(
