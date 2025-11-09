@@ -38,9 +38,9 @@ jobs:
           - platform: windows-2022
             target: x86_64-pc-windows-msvc
             mise_install_args: ""
-          - platform: windows-11-arm
-            target: aarch64-pc-windows-msvc
-            mise_install_args: "python aqua:astral-sh/uv node rust aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc aqua:pnpm/pnpm"
+          # - platform: windows-11-arm
+          #   target: aarch64-pc-windows-msvc
+          #   mise_install_args: "python aqua:astral-sh/uv node rust aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc aqua:pnpm/pnpm"
 
     runs-on: ${{ matrix.platform }}
     steps:
