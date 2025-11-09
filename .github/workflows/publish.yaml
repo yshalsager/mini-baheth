@@ -25,45 +25,33 @@ jobs:
         include:
           - platform: macos-15-intel
             target: x86_64-apple-darwin
+            mise_install_args: ""
           - platform: macos-15
             target: aarch64-apple-darwin
+            mise_install_args: ""
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
+            mise_install_args: ""
           - platform: ubuntu-22.04-arm
             target: aarch64-unknown-linux-gnu
+            mise_install_args: "python aqua:astral-sh/uv node rust aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc aqua:pnpm/pnpm"
           - platform: windows-2022
             target: x86_64-pc-windows-msvc
+            mise_install_args: ""
           - platform: windows-11-arm
             target: aarch64-pc-windows-msvc
+            mise_install_args: "python aqua:astral-sh/uv node rust aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc aqua:pnpm/pnpm"
 
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup mise (desktop, non-ARM64)
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+      - name: Setup mise
         uses: jdx/mise-action@v3
         with:
           working_directory: desktop
           install: true
-
-      - name: Setup mise (desktop, Windows ARM64)
-        if: runner.os == 'Windows' && contains(matrix.target, 'aarch64')
-        uses: jdx/mise-action@v3
-        with:
-          working_directory: desktop
-          install: true
-          install_args: |
-            python aqua:astral-sh/uv node rust aqua:tomnomnom/gron "aqua:pnpm/pnpm"
-
-      - name: Setup mise (desktop, Linux ARM64)
-        if: runner.os == 'Linux' && contains(matrix.target, 'aarch64')
-        uses: jdx/mise-action@v3
-        with:
-          working_directory: desktop
-          install: true
-          install_args: |
-            python aqua:astral-sh/uv node rust aqua:BurntSushi/ripgrep aqua:tomnomnom/gron github:jgm/pandoc "aqua:pnpm/pnpm"
+          install_args: ${{ matrix.mise_install_args }}
 
       - name: Install system dependencies (ubuntu only)
         if: runner.os == 'Linux'
