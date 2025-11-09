@@ -74,6 +74,44 @@ def maybe_fix_macos_lib(dest_dir: Path, version: str) -> None:
         )
 
 
+def strip_tk(dest_dir: Path, version: str) -> None:
+    py = dest_dir / 'python'
+    mm = '.'.join(version.split('.')[:2])
+
+    def rm(p: Path) -> None:
+        if p.exists():
+            shutil.rmtree(p) if p.is_dir() else p.unlink()
+
+    def rm_glob(base: Path, patterns: list[str]) -> None:
+        if not base.exists():
+            return
+        for pat in patterns:
+            for x in base.glob(pat):
+                rm(x)
+
+    rm(py / 'tcl')
+    rm_glob(
+        py / 'DLLs', ['_tkinter.pyd', 'tcl*.dll', 'tk*.dll', 'itcl*.dll', 'itk*.dll', 'tix*.dll']
+    )
+    rm_glob(py / 'Lib', ['tkinter'])
+    site = py / 'lib' / f'python{mm}'
+    rm_glob(site, ['tkinter', 'lib-dynload/_tkinter*.so', 'lib-dynload/_tkinter*.dylib'])
+    rm_glob(
+        py / 'lib',
+        [
+            'tcl*',
+            'tk*',
+            'itcl*',
+            'itk*',
+            'iwidgets*',
+            'libtcl*.dylib',
+            'libtk*.dylib',
+            'libtcl*.so*',
+            'libtk*.so*',
+        ],
+    )
+
+
 def main(argv: list[str]) -> int:
     root = Path(__file__).resolve().parents[1]
     dest = root / 'src-tauri' / 'pyembed'
@@ -85,6 +123,7 @@ def main(argv: list[str]) -> int:
 
     download_and_extract(url, dest)
     maybe_fix_macos_lib(dest, version)
+    strip_tk(dest, version)
     print(dest)
     return 0
 
