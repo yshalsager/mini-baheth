@@ -2,8 +2,15 @@
 
 A simple, self-hosted web UI and desktop app for searching through text files using `ripgrep` and `ripgrep-all`.
 
+<img src="desktop/src/lib/assets/logo.svg" alt="logo" width="256" height="256" />
+
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+
+
+[![GitHub release](https://img.shields.io/github/release/yshalsager/mini-baheth.svg)](https://github.com/yshalsager/mini-baheth/releases/)
+[![GitHub Downloads](https://img.shields.io/github/downloads/yshalsager/mini-baheth/total.svg)](https://github.com/yshalsager/mini-baheth/releases/latest)
+
 
 [![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=flat&labelColor=00457C&logo=PayPal&logoColor=white&link=https://www.paypal.me/yshalsager)](https://www.paypal.me/yshalsager)
 [![Patreon](https://img.shields.io/badge/Patreon-Support-F96854?style=flat&labelColor=F96854&logo=Patreon&logoColor=white&link=https://www.patreon.com/XiaomiFirmwareUpdater)](https://www.patreon.com/XiaomiFirmwareUpdater)
@@ -28,7 +35,7 @@ A simple, self-hosted web UI and desktop app for searching through text files us
 - Search: ripgrep (rg), ripgrep-all (rga)
 - Frontend: HTML, Tailwind CSS (via CDN), htmx
 - Packaging & Runtime: Docker, uv
-- Desktop: Tauri + PyTauri (embedded Python)
+- Desktop: Tauri + PyTauri + SvelteKit + Shadcn
 
 ## Setup
 
