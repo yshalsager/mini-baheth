@@ -21,16 +21,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[4]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# ensure bundled binaries are on PATH when launched from Finder
+# ensure bundled bin is on PATH (Windows/macOS/Linux)
 with suppress(Exception):
     exe = Path(sys.executable).resolve()
+    dirs: list[Path] = []
     for p in exe.parents:
         if p.name == 'Resources' and p.is_dir():
-            bin_dir = p / 'bin'
-            if bin_dir.exists():
-                current = environ.get('PATH', '')
-                environ['PATH'] = str(bin_dir) + (pathsep + current if current else '')
+            dirs.append(p / 'bin')
             break
+    dirs += [exe.parent / 'bin', exe.parent.parent / 'bin']
+    found = next((d for d in dirs if d.is_dir()), None)
+    if found:
+        current = environ.get('PATH', '')
+        environ['PATH'] = str(found) + (pathsep + current if current else '')
 
 from core import (  # noqa: E402
     ResultStreamProcessor,

@@ -69,16 +69,18 @@ def _find_tool(tool: str) -> str | None:
         return found
     with suppress(Exception):
         exe = Path(sys.executable).resolve()
+        dirs: list[Path] = []
         for p in exe.parents:
             if p.name == 'Resources' and p.is_dir():
-                base = p / 'bin' / tool
-                cands = [base]
-                if sys.platform == 'win32':
-                    cands.insert(0, base.with_name(f'{tool}.exe'))
-                for cand in cands:
-                    if cand.exists() and os.access(cand, os.X_OK):
-                        return str(cand)
+                dirs.append(p / 'bin')
                 break
+        dirs += [exe.parent / 'bin', exe.parent.parent / 'bin']
+        names = [f'{tool}.exe', tool] if sys.platform == 'win32' else [tool]
+        for d in dirs:
+            for name in names:
+                cand = d / name
+                if cand.exists() and os.access(cand, os.X_OK):
+                    return str(cand)
     return None
 
 
