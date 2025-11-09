@@ -30,6 +30,7 @@
   import { resetMode, setMode, userPrefersMode } from "mode-watcher";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
+  import { asset } from "$app/paths";
 
   import type { SearchCompletePayload, SearchErrorPayload, SearchMatchPayload, SearchStartedPayload } from "$lib/types";
 
@@ -424,7 +425,7 @@
       <div class="flex items-end justify-between text-start">
         <div class="flex items-end gap-3">
           <div class="flex items-center gap-2">
-            <img src="/logo.svg" alt="mini-baheth" class="h-8 w-8" />
+            <img src={asset(`/logo.svg`)} alt="mini-baheth" class="h-8 w-8" />
             <span class="sr-only">mini-baheth</span>
           </div>
         </div>
