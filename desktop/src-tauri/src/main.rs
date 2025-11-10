@@ -12,6 +12,7 @@ use tauri::utils::platform::resource_dir;
 use mini_baheth_lib::{ext_mod, tauri_generate_context};
 
 fn main() -> Result<Infallible, Box<dyn Error>> {
+    let _ = fix_path_env::fix();
     let py_env = if cfg!(dev) {
         // `cfg(dev)` is set by `tauri-build` in `build.rs`, which means running with `tauri dev`,
         // see: <https://github.com/tauri-apps/tauri/pull/8937>.
