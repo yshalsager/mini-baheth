@@ -35,3 +35,6 @@ members = ["core"]
 
 [tool.uv.sources]
 mini-baheth-core = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
