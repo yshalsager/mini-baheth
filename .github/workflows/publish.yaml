@@ -71,6 +71,14 @@ jobs:
         shell: pwsh
         run: mise.exe x uv -- uv.exe run .\scripts\download_python.py
 
+      - name: Bundle pdftotext (macOS)
+        if: runner.os == 'macOS'
+        run: mise x uv -- uv run ./scripts/download_pdftotext.py --require
+
+      - name: Bundle pdftotext (Linux x86_64)
+        if: runner.os == 'Linux' && !contains(matrix.target, 'aarch64')
+        run: mise x uv -- uv run ./scripts/download_pdftotext.py --require
+
       - name: Build bundle (macOS/Linux)
         if: runner.os != 'Windows'
         run: mise x uv -- uv run ./scripts/build_app.py
@@ -88,7 +96,9 @@ jobs:
       - name: Build bundle (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: mise.exe x uv -- uv.exe run .\scripts\build_app.py
+        run: |
+          mise.exe x uv -- uv.exe run .\scripts\download_pdftotext.py --require
+          mise.exe x uv -- uv.exe run .\scripts\build_app.py
 
       - name: Read app version
         id: get_version

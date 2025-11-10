@@ -36,7 +36,6 @@ RUN set -eux; \
   cd /; rm -rf "$tmpdir"; \
   rga --version
 
-
 # ===== STAGE 2: UV installation =====
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv-stage
 
@@ -50,6 +49,11 @@ COPY --from=builder /usr/bin/rg /usr/bin/rg
 COPY --from=builder /usr/bin/antiword /usr/bin/antiword
 COPY --from=builder /usr/bin/pandoc /usr/bin/pandoc
 COPY --from=builder /usr/bin/gron /usr/bin/gron
+
+# Install runtime deps for PDF support
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  poppler-utils \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy UV from uv-stage
 COPY --from=uv-stage /uv /usr/local/bin/uv

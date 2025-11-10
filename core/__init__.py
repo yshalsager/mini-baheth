@@ -26,7 +26,7 @@ from core.schemas import (
     SearchRequest,
 )
 
-RGA_FILE_FILTERS: tuple[str, ...] = ('*.doc', '*.docx', '*.json', '*.md')
+RGA_FILE_FILTERS: tuple[str, ...] = ('*.doc', '*.docx', '*.json', '*.md', '*.pdf')
 DIR_CACHE_TTL = 60
 MAX_DEPTH = 3
 
@@ -328,6 +328,14 @@ def directories_response(data_dir: Path, request: DirectoriesRequest) -> Directo
 def read_file_lines(path: Path) -> list[str]:
     try:
         ext = path.suffix.lower()
+        if ext == '.pdf' and which('pdftotext'):
+            proc = subprocess.run(
+                ['pdftotext', '-layout', '-q', str(path), '-'],
+                capture_output=True,
+                check=False,
+            )
+            text = proc.stdout.decode('utf-8', errors='replace')
+            return text.splitlines()
         if ext == '.docx' and which('pandoc'):
             proc = subprocess.run(
                 ['pandoc', '-f', 'docx', '-t', 'plain', str(path)],

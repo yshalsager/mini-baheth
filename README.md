@@ -26,6 +26,7 @@ A simple, self-hosted web UI and desktop app for searching through text files us
 - `rga` adapters for more formats:
   - DOCX: via `pandoc` (built-in `rga` adapter)
   - DOC: via `antiword` ([custom adapter](https://github.com/phiresky/ripgrep-all/discussions/272))
+  - PDF: via `pdftotext` (poppler)
   - JSON: via `gron` ([custom adapter](https://github.com/phiresky/ripgrep-all/discussions/176)) to flatten keys/values
 - Responsive design using Tailwind CSS.
 
@@ -82,6 +83,7 @@ Put or symlink the directories and files you want to search inside the `data/` d
 The image installs:
 - ripgrep, ripgrep-all
 - pandoc (DOCX), antiword (DOC), gron (JSON)
+- poppler-utils (pdftotext) for PDF support
 
 It ships an rga config at `/etc/rga/config.json` that enables custom adapters for antiword and gron.
 
@@ -110,8 +112,9 @@ uv run granian webapp.app:app.asgi
 The application should now be accessible at `http://127.0.0.1:5000` (or the `GRANIAN_PORT` you configured).
 
 ### Notes
-- The server chooses `rga` when the file filter is `*.doc`, `*.docx`, or `*.json`, otherwise it uses `rg`. When using `rga`, it passes `--rga-config-file=rga.config.json` if present (or `/etc/rga/config.json` in Docker).
-- Modal preview: `.docx` uses pandoc; `.doc` uses antiword; other files are read as text.
+- The server chooses `rga` when the file filter is `*.doc`, `*.docx`, `*.pdf`, or `*.json`, otherwise it uses `rg`. When using `rga`, it passes `--rga-config-file=rga.config.json` if present (or `/etc/rga/config.json` in Docker).
+- Modal preview: `.docx` uses pandoc; `.doc` uses antiword; `.pdf` uses `pdftotext` when available; other files are read as text.
+- PDF search/preview requires `pdftotext` (poppler). It is not bundled. Install it on your system (e.g., macOS: `brew install poppler`, Debian/Ubuntu: `apt install poppler-utils`, Arch: `pacman -S poppler`).
  - Ignore/Require enable PCRE2 (`-P`) in ripgrep which can be slower; prefer Smart when you don’t need diacritic-awareness.
 
 ## Traefik Integration (Optional)
