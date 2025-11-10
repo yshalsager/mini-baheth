@@ -1,6 +1,6 @@
 [project]
 name = "mini-baheth-core"
-version = "0.1.0"
+version = "0.2.0"
 description = "Shared search logic and schemas for mini-baheth"
 readme = "README.md"
 requires-python = ">=3.13"

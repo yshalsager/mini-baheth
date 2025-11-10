@@ -54,7 +54,7 @@ wheels = [
 
 [[package]]
 name = "mini-baheth-core"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "../core" }
 dependencies = [
     { name = "orjson" },
@@ -65,7 +65,7 @@ requires-dist = [{ name = "orjson", specifier = ">=3.11.4,<4" }]
 
 [[package]]
 name = "mini-baheth-desktop"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "src-tauri" }
 dependencies = [
     { name = "anyio" },
@@ -290,7 +290,7 @@ wheels = [
 
 [[package]]
 name = "workspace"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
