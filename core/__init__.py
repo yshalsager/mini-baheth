@@ -222,6 +222,11 @@ class ResultStreamProcessor:
             ),
         )
 
+        # mtime for simple date-based sorting on the frontend
+        with suppress(Exception):
+            fs_path = resolve_data_path(self.data_dir, match_payload.path)
+            match_payload.mtime = fs_path.stat().st_mtime
+
         if self.context_before:
             match_payload.context_before = self.context_before
             self.context_before = ''

@@ -11,6 +11,7 @@ export type SearchMatchPayload = {
   submatches: Submatch[]
   context_before: string
   context_after: string
+  mtime?: number
   request_id?: string | null
 }
 
@@ -40,4 +41,3 @@ export type FileResponse = {
   lines: string[]
   line_number?: number | null
 }
-

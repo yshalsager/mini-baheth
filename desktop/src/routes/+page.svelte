@@ -24,6 +24,7 @@
   import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
   import { with_current } from "$lib/search-events";
   import { debounce } from "$lib/utils";
+  import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
   import type { UnlistenFn } from "@tauri-apps/api/event";
   import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
@@ -54,6 +55,14 @@
   let _timer: number | null = null;
 
   let results = $state<SearchMatchPayload[]>([]);
+  let sort_by = $state<'relevance' | 'name-asc' | 'name-desc' | 'date-desc' | 'date-asc'>('relevance');
+  const sorted_results = $derived.by(() => {
+    if (sort_by === 'name-asc') return [...results].sort((a, b) => a.path.localeCompare(b.path));
+    if (sort_by === 'name-desc') return [...results].sort((a, b) => b.path.localeCompare(a.path));
+    if (sort_by === 'date-desc') return [...results].sort((a, b) => (b.mtime ?? 0) - (a.mtime ?? 0));
+    if (sort_by === 'date-asc') return [...results].sort((a, b) => (a.mtime ?? 0) - (b.mtime ?? 0));
+    return results;
+  });
 
   let modal_open = $state(false);
   let modal_loading = $state(false);
@@ -513,9 +522,35 @@
               <p class="text-start text-sm text-muted-foreground">لم يتم العثور على نتائج مطابقة.</p>
             {/if}
 
+            <div class="flex items-center gap-2" aria-label="خيارات الترتيب">
+              <label for="sort" class="text-sm whitespace-nowrap">ترتيب</label>
+              <Select type="single" value={sort_by} onValueChange={(v: string) => { sort_by = v as any }}>
+                <SelectTrigger id="sort" class="h-8 w-64 justify-between">
+                  <span data-slot="select-value" class="truncate text-start">
+                    {sort_by === 'relevance'
+                      ? 'افتراضي (بدون ترتيب)'
+                      : sort_by === 'name-asc'
+                        ? 'الاسم (A→Z)'
+                        : sort_by === 'name-desc'
+                          ? 'الاسم (Z→A)'
+                          : sort_by === 'date-desc'
+                            ? 'تاريخ الإضافة (الأحدث أولًا)'
+                            : 'تاريخ الإضافة (الأقدم أولًا)'}
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="relevance">افتراضي (بدون ترتيب)</SelectItem>
+                  <SelectItem value="name-asc">الاسم (A→Z)</SelectItem>
+                  <SelectItem value="name-desc">الاسم (Z→A)</SelectItem>
+                  <SelectItem value="date-desc">تاريخ الإضافة (الأحدث أولًا)</SelectItem>
+                  <SelectItem value="date-asc">تاريخ الإضافة (الأقدم أولًا)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {#key current_request_id}
               <ResultsList
-                {results}
+                results={sorted_results}
                 {open_result}
                 {selected_key}
                 select_result={handle_select_result}

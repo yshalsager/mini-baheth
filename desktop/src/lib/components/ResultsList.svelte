@@ -200,6 +200,16 @@
   function copy_path(r: SearchMatchPayload) {
     navigator.clipboard?.writeText(r.path);
   }
+
+  function format_mtime(m?: number) {
+    if (!m || Number.isNaN(m)) return "";
+    try {
+      const d = new Date(m * 1000);
+      return d.toLocaleString();
+    } catch {
+      return "";
+    }
+  }
 </script>
 
 <section class="space-y-2">
@@ -216,6 +226,7 @@
         <TableRow class="text-end">
           <TableHead class="px-3 py-2">الملف</TableHead>
           <TableHead class="px-3 py-2">السطر</TableHead>
+          <TableHead class="px-3 py-2">التاريخ</TableHead>
           <TableHead class="px-3 py-2">المقتطف</TableHead>
           <TableHead class="px-3 py-2"></TableHead>
         </TableRow>
@@ -277,6 +288,7 @@
                   </div>
                 </TableCell>
                 <TableCell class="px-3 py-2 w-16" dir="ltr">#{result.line_number}</TableCell>
+                <TableCell class="px-3 py-2 w-44" dir="ltr">{format_mtime(result.mtime)}</TableCell>
                 <TableCell class="px-3 py-2">
                   {#if result.context_before}
                     <p class="mb-1 text-xs text-muted-foreground" dir="auto">{result.context_before}</p>

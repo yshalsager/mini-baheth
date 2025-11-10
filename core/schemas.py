@@ -21,6 +21,7 @@ class SearchMatch(BaseModel):
     context_before: str = ''
     context_after: str = ''
     highlighted_text: str = ''
+    mtime: float | None = None
     request_id: str | None = None
 
 
