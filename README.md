@@ -27,7 +27,20 @@ A simple, self-hosted web UI and desktop app for searching through text files us
   - DOCX: via `pandoc` (built-in `rga` adapter)
   - DOC: via `antiword` ([custom adapter](https://github.com/phiresky/ripgrep-all/discussions/272))
   - JSON: via `gron` ([custom adapter](https://github.com/phiresky/ripgrep-all/discussions/176)) to flatten keys/values
- - Responsive design using Tailwind CSS.
+- Responsive design using Tailwind CSS.
+
+### Arabic Diacritics (التشكيل)
+
+Both Desktop and Web expose a single “نمط البحث” control with four modes:
+
+- ذكي (Smart): Fast path. Only expands base letters and turns spaces into gaps; no PCRE and no extra mark handling. If you type diacritics, they are treated literally.
+- تجاهل التشكيل (Ignore): Matches with or without diacritics by allowing optional combining marks (and tatweel) after Arabic letters. Enables PCRE2.
+- التزام التشكيل (Require): Enforces diacritics only where you typed them in your query (per-letter). Enables PCRE2.
+- تعبير اعتيادي (Regex): Uses your regex pattern as-is.
+
+Notes
+- PCRE2 is enabled only when needed (Ignore / Require). Expect slower searches in those modes.
+- “Smart” is the default for performance and predictable results.
 
 ## Technology Stack
 
@@ -99,6 +112,7 @@ The application should now be accessible at `http://127.0.0.1:5000` (or the `GRA
 ### Notes
 - The server chooses `rga` when the file filter is `*.doc`, `*.docx`, or `*.json`, otherwise it uses `rg`. When using `rga`, it passes `--rga-config-file=rga.config.json` if present (or `/etc/rga/config.json` in Docker).
 - Modal preview: `.docx` uses pandoc; `.doc` uses antiword; other files are read as text.
+ - Ignore/Require enable PCRE2 (`-P`) in ripgrep which can be slower; prefer Smart when you don’t need diacritic-awareness.
 
 ## Traefik Integration (Optional)
 

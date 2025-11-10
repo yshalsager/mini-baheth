@@ -23,14 +23,14 @@
   import { FILE_FILTERS, MAX_RESULTS } from "$lib/constants";
   import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
   import { with_current } from "$lib/search-events";
-  import { debounce, prep_query } from "$lib/utils";
+  import { debounce } from "$lib/utils";
   import type { UnlistenFn } from "@tauri-apps/api/event";
   import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
   import { resetMode, setMode, userPrefersMode } from "mode-watcher";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
-  import { asset } from "$app/paths";
+  import logo_url from "$lib/assets/logo.svg";
 
   import type { SearchCompletePayload, SearchErrorPayload, SearchMatchPayload, SearchStartedPayload } from "$lib/types";
 
@@ -43,7 +43,7 @@
   let file_filters = $state<string[]>([FILE_FILTERS[0]]);
 
   let query = $state("");
-  let regex = $state(false);
+  let search_mode = $state<'smart' | 'regex' | 'ignore' | 'require'>('smart');
   let search_error = $state("");
   let searching = $state(false);
   let search_complete = $state(false);
@@ -249,9 +249,7 @@
     searching = true;
 
     try {
-      const pattern = regex ? trimmed_query : prep_query(trimmed_query).source;
-      console.log(pattern)
-      await search_api({ query: pattern, directory: selected_directory, file_filters, request_id });
+      await search_api({ query: trimmed_query, directory: selected_directory, file_filters, request_id, search_mode });
     } catch (error) {
       if (current_request_id !== request_id) return;
       search_error = error instanceof Error ? error.message : String(error);
@@ -425,7 +423,7 @@
       <div class="flex items-end justify-between text-start">
         <div class="flex items-end gap-3">
           <div class="flex items-center gap-2">
-            <img src={asset(`/logo.svg`)} alt="mini-baheth" class="h-8 w-8" />
+            <img src={logo_url} alt="mini-baheth" class="h-8 w-8" />
             <span class="sr-only">mini-baheth</span>
           </div>
         </div>
@@ -490,7 +488,7 @@
           {directories_error}
           bind:selected_directory
           bind:file_filters
-          bind:regex
+          bind:search_mode
           bind:query
           {data_root}
           {search_hint}

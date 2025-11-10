@@ -13,7 +13,7 @@ export function list_directories(query: string, limit = 200) {
   return pyInvoke<DirectoriesResponse>('list_directories', { query: query?.trim() ?? '', limit })
 }
 
-export function search(params: { query: string; directory: string; file_filters: string[]; request_id: string }) {
+export function search(params: { query: string; directory: string; file_filters: string[]; request_id: string; search_mode?: 'smart'|'regex'|'ignore'|'require' }) {
   return pyInvoke('search', params)
 }
 

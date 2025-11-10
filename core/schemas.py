@@ -9,6 +9,7 @@ class SearchRequest(BaseModel):
     query: str
     directory: str = '.'
     file_filters: list[str] = Field(default_factory=list)
+    search_mode: str | None = None
     request_id: str | None = None
 
 

@@ -2,8 +2,7 @@
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'
   import { Button } from '$lib/components/ui/button'
-  import { Toggle } from '$lib/components/ui/toggle'
-  import RegexIcon from '@lucide/svelte/icons/regex'
+  import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select'
   import XIcon from '@lucide/svelte/icons/x'
 
   let {
@@ -11,14 +10,14 @@
     search_hint = "",
     search_error = "",
     handle_query_input,
-    regex = $bindable(false),
+    search_mode = $bindable<'smart' | 'regex' | 'ignore' | 'require'>('smart'),
   on_enter,
   }: {
     query?: string;
     search_hint?: string;
     search_error?: string;
     handle_query_input: () => void;
-    regex?: boolean;
+    search_mode?: 'smart' | 'regex' | 'ignore' | 'require';
     on_enter: () => void;
   } = $props();
 </script>
@@ -34,15 +33,22 @@
       onkeydown={e => e.key === "Enter" && on_enter()}
       dir="auto"
     />
-    <Toggle
-      aria-label="Regex"
-      title="Regex"
-      bind:pressed={regex}
-      onclick={handle_query_input}
-      class="h-9 min-w-9"
-    >
-      <RegexIcon />
-    </Toggle>
+    <div class="flex items-center gap-2">
+      <label for="mode" class="text-sm whitespace-nowrap">نمط البحث</label>
+      <Select type="single" value={search_mode} onValueChange={(v: string) => { search_mode = v as any; handle_query_input() }}>
+        <SelectTrigger id="mode" class="h-9 w-48 justify-between">
+          <span data-slot="select-value" class="truncate text-start">
+            {search_mode === 'smart' ? 'ذكي' : search_mode === 'regex' ? 'تعبير اعتيادي' : search_mode === 'ignore' ? 'تجاهل التشكيل' : 'التزام التشكيل'}
+          </span>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="smart">ذكي</SelectItem>
+          <SelectItem value="regex">تعبير اعتيادي</SelectItem>
+          <SelectItem value="ignore">تجاهل التشكيل</SelectItem>
+          <SelectItem value="require">التزام التشكيل</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
     {#if query}
       <Button
         aria-label="Clear"

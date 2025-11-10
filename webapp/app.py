@@ -13,6 +13,7 @@ from core.schemas import (
     SearchError,
     SearchMatch,
 )
+from core.patterns import build_pattern
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = ROOT_DIR / 'templates'
@@ -37,6 +38,7 @@ app = Django(
 )
 
 
+
 def get_directories(max_depth: int = MAX_DEPTH) -> list[str]:
     request = DirectoriesRequest(max_depth=max_depth)
     return directories_response(DATA_DIR, request).directories
@@ -52,7 +54,13 @@ def index(request):
 
 
 @app.api.get('/search')
-async def search(request: StreamingHttpResponse, query: str, directory: str, file_filter: str | None = None):
+async def search(
+    request: StreamingHttpResponse,
+    query: str,
+    directory: str,
+    file_filter: str | None = None,
+    search_mode: str | None = None,
+):
     if not query:
         return ''
 
@@ -61,12 +69,16 @@ async def search(request: StreamingHttpResponse, query: str, directory: str, fil
         filters = request.GET.getlist('file_filter') if hasattr(request, 'GET') else []
         if not filters and file_filter:
             filters = [p.strip() for p in file_filter.split(',') if p.strip()]
+        mode = (search_mode or 'smart').strip().lower()
+        pattern, need_pcre = build_pattern(mode, query)
+
         processor = stream_search(
-            query,
+            pattern,
             directory,
             filters,
             DATA_DIR,
             RGA_CONFIG_PATH if RGA_CONFIG_PATH.exists() else None,
+            use_pcre=need_pcre,
         )
     except FileNotFoundError:
 

@@ -90,6 +90,7 @@ def build_search_command(
     file_filters: list[str],
     data_dir: Path,
     rga_config: Path | None = None,
+    use_pcre: bool = False,
 ) -> list[str]:
     filters = [f.strip() for f in (file_filters or []) if f and f.strip()]
     use_all = any(f in {'*', 'all'} for f in filters)
@@ -119,6 +120,9 @@ def build_search_command(
             '--follow',
         ]
     )
+
+    if use_pcre:
+        cmd.append('-P')
 
     target_dir = _normalize_directory(directory, data_dir)
 
@@ -250,8 +254,9 @@ def stream_search(
     file_filters: list[str],
     data_dir: Path,
     rga_config: Path | None = None,
+    use_pcre: bool = False,
 ) -> ResultStreamProcessor:
-    command = build_search_command(query, directory, file_filters, data_dir, rga_config)
+    command = build_search_command(query, directory, file_filters, data_dir, rga_config, use_pcre=use_pcre)
     return ResultStreamProcessor(command, data_dir)
 
 

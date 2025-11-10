@@ -41,6 +41,7 @@ from core import (  # noqa: E402
     file_response,
     stream_search,
 )
+from core.patterns import build_pattern  # noqa: E402
 from core.schemas import (  # noqa: E402
     DirectoriesRequest,
     DirectoriesResponse,
@@ -88,12 +89,16 @@ async def search(body: SearchRequest, app_handle: AppHandle) -> None:
             await _active_processor.cancel()
             _active_processor = None
 
+        # build pattern + PCRE based on mode; fallback to ignore flag when no mode
+        pattern, need_pcre = build_pattern(getattr(body, 'search_mode', None), body.query)
+
         processor = stream_search(
-            body.query,
+            pattern,
             body.directory,
             body.file_filters,
             DATA_ROOT,
             RGA_CONFIG_PATH if RGA_CONFIG_PATH.exists() else None,
+            use_pcre=need_pcre,
         )
         _active_processor = processor
 
@@ -101,7 +106,7 @@ async def search(body: SearchRequest, app_handle: AppHandle) -> None:
         app_handle,
         'search_started',
         SearchStarted(
-            query=body.query,
+            query=pattern,
             directory=body.directory,
             file_filter=','.join(body.file_filters or []),
             request_id=request_id,
