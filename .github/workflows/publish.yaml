@@ -89,7 +89,7 @@ jobs:
         if: runner.os != 'Windows'
         env:
           APPIMAGE_EXTRACT_AND_RUN: '1'
-          DEBUG: '1'
+          # DEBUG: '1'
         run: mise x uv -- uv run ./scripts/build_app.py
 
       - name: Zip macOS .app bundle
@@ -135,4 +135,3 @@ jobs:
             desktop/target/**/bundle/nsis/*.exe
             desktop/target/**/bundle/deb/*.deb
             desktop/target/**/bundle/rpm/*.rpm
-            desktop/target/**/bundle/appimage/*.AppImage

@@ -2,7 +2,6 @@
   "bundle": {
     "active": true,
     "targets": [
-      "appimage",
       "deb",
       "rpm",
       "msi",
