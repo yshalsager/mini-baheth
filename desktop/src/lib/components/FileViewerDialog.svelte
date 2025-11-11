@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "$lib/components/ui/dialog";
-  import { ScrollArea } from "$lib/components/ui/scroll-area";
   import { Button } from "$lib/components/ui/button";
+  import FilePreviewContent from "$lib/components/FilePreviewContent.svelte";
 
   let {
     open = $bindable(false),
@@ -20,11 +20,6 @@
     error?: string;
     wrap?: boolean;
   } = $props();
-
-  function center_on_mount(node: HTMLElement) {
-    requestAnimationFrame(() => node.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }));
-  }
-  const pre_class = $derived(wrap ? "whitespace-pre-wrap break-words" : "whitespace-pre break-words");
 </script>
 
 <Dialog bind:open>
@@ -35,31 +30,17 @@
         <p class="text-sm text-muted-foreground">سطر {line_number}</p>
       {/if}
     </DialogHeader>
-    <ScrollArea class="max-h-[90vh] rounded border overflow-hidden">
-      <div class="space-y-1 p-4" dir="auto">
-        {#if loading}
-          <p class="text-sm text-muted-foreground">جارٍ تحميل الملف...</p>
-        {:else if error}
-          <p class="text-sm text-destructive">{error}</p>
-        {:else}
-          {#each lines as line, index (index)}
-            <div class="flex items-start gap-3">
-              <span class="w-10 select-none text-end font-mono text-xs text-muted-foreground">{index + 1}</span>
-              {#if line_number === index + 1}
-                <span
-                  {@attach center_on_mount}
-                  aria-current="true"
-                  class={"flex-1 rounded px-2 py-1 bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-50 " + pre_class}
-                  >{line}</span
-                >
-              {:else}
-                <span class={"flex-1 rounded px-2 py-1 " + pre_class}>{line}</span>
-              {/if}
-            </div>
-          {/each}
-        {/if}
-      </div>
-    </ScrollArea>
+    <div class="max-h-[90vh] rounded border overflow-hidden">
+      <FilePreviewContent
+        lines={lines}
+        {line_number}
+        {loading}
+        {error}
+        bind:wrap
+        font_px={13}
+        show_copy_line={false}
+      />
+    </div>
     <DialogFooter class="justify-end">
       <Button variant="outline" onclick={() => (open = false)}>إغلاق</Button>
     </DialogFooter>

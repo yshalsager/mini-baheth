@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { ScrollArea } from "$lib/components/ui/scroll-area";
   import { Button } from "$lib/components/ui/button";
-  import Copy from "@lucide/svelte/icons/copy";
+  import FilePreviewContent from "$lib/components/FilePreviewContent.svelte";
 
   let {
     file = "",
@@ -21,10 +20,6 @@
     font_px?: number;
   } = $props();
 
-  function center_on_mount(node: HTMLElement) {
-    requestAnimationFrame(() => node.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }));
-  }
-
   function inc_font(delta: number) {
     font_px = Math.max(11, Math.min(20, font_px + delta));
   }
@@ -33,14 +28,6 @@
       await navigator.clipboard?.writeText(lines.join("\n"));
     } catch {}
   }
-
-  async function copy_line(text: string) {
-    try {
-      await navigator.clipboard?.writeText(text);
-    } catch {}
-  }
-
-  const pre_class = $derived(wrap ? "whitespace-pre-wrap" : "whitespace-pre");
 </script>
 
 <div class="flex h-full flex-col gap-2">
@@ -63,43 +50,15 @@
 
   <div class="min-h-0 flex-1 rounded border">
     {#key file}
-      <ScrollArea orientation="both" class="h-full">
-        <div class="space-y-1 p-3" dir="auto" style={`font-size:${font_px}px`}>
-          {#if loading}
-            <p class="text-sm text-muted-foreground">جارٍ تحميل الملف...</p>
-          {:else if error}
-            <p class="text-sm text-destructive">{error}</p>
-          {:else if !lines.length}
-            <p class="text-sm text-muted-foreground">لا يوجد محتوى للعرض.</p>
-          {:else}
-            {#each lines as line, index (index)}
-              <div class="flex items-start gap-3">
-                <span class="w-10 select-none text-end font-mono text-xs text-muted-foreground">{index + 1}</span>
-                {#if line_number === index + 1}
-                  <span
-                    {@attach center_on_mount}
-                    aria-current="true"
-                    class={"flex-1 rounded bg-yellow-100 dark:bg-yellow-700 dark:text-yellow-50 px-2 py-1 " + pre_class}
-                  >
-                    {line}
-                  </span>
-                {:else}
-                  <span class={"flex-1 rounded px-2 py-1 " + pre_class}>{line}</span>
-                {/if}
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  title="نسخ السطر"
-                  aria-label="نسخ السطر"
-                  onclick={() => copy_line(line)}
-                >
-                  <Copy class="size-4" />
-                </Button>
-              </div>
-            {/each}
-          {/if}
-        </div>
-      </ScrollArea>
+      <FilePreviewContent
+        {lines}
+        {line_number}
+        {loading}
+        {error}
+        bind:wrap
+        bind:font_px
+        show_copy_line={true}
+      />
     {/key}
   </div>
 </div>
