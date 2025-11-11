@@ -371,9 +371,9 @@ def read_file_lines(path: Path) -> list[str]:
             text = proc.stdout.decode('utf-8', errors='replace')
             return text.splitlines()
 
-        return path.read_text(errors='replace').splitlines()
+        return path.read_text(encoding='utf-8', errors='replace').splitlines()
     except Exception:  # noqa: BLE001
-        return path.read_text(errors='replace').splitlines()
+        return path.read_text(encoding='utf-8', errors='replace').splitlines()
 
 
 def file_response(data_dir: Path, request: FileRequest) -> FileResponse:
