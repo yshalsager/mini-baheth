@@ -24,18 +24,18 @@
   function center_on_mount(node: HTMLElement) {
     requestAnimationFrame(() => node.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }));
   }
-  const pre_class = $derived(wrap ? "whitespace-pre-wrap" : "whitespace-pre");
+  const pre_class = $derived(wrap ? "whitespace-pre-wrap break-words" : "whitespace-pre break-words");
 </script>
 
 <Dialog bind:open>
-  <DialogContent class="max-w-3xl" dir="rtl">
+  <DialogContent class="w-[95vw] sm:w-[92vw] md:w-[90vw] lg:w-[88vw] xl:w-[85vw] max-w-[95vw] sm:max-w-[92vw] md:max-w-[90vw] lg:max-w-[88vw] xl:max-w-[85vw] 2xl:max-w-[80vw]" dir="rtl">
     <DialogHeader class="gap-2 text-start">
       <DialogTitle>{file}</DialogTitle>
       {#if line_number}
         <p class="text-sm text-muted-foreground">سطر {line_number}</p>
       {/if}
     </DialogHeader>
-    <ScrollArea class="max-h-[400px] rounded border">
+    <ScrollArea class="max-h-[90vh] rounded border overflow-hidden">
       <div class="space-y-1 p-4" dir="auto">
         {#if loading}
           <p class="text-sm text-muted-foreground">جارٍ تحميل الملف...</p>
