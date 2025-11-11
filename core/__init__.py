@@ -113,6 +113,7 @@ def build_search_command(
     cmd.extend(
         [
             '--json',
+            '-n',
             '--max-count',
             '100',
             '-m',
