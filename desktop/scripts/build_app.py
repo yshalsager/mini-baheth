@@ -120,7 +120,7 @@ def main(argv: list[str]) -> int:
 
     # Build tauri bundle
     verbose_flags = []
-    if os.environ.get('DEBUG') or os.environ.get('CI'):
+    if os.environ.get('DEBUG'):
         verbose_flags = ['-v', '-v']
 
     if platform.system().lower() == 'windows' and platform.machine().lower() in {
