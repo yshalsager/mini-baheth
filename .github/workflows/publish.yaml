@@ -62,6 +62,7 @@ jobs:
             libwebkit2gtk-4.1-dev \
             libappindicator3-dev \
             librsvg2-dev \
+            glib2.0-bin \
             desktop-file-utils \
             libfuse2
 

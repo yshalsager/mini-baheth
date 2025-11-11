@@ -119,6 +119,10 @@ def main(argv: list[str]) -> int:
             pass
 
     # Build tauri bundle
+    verbose_flags = []
+    if os.environ.get('DEBUG') or os.environ.get('CI'):
+        verbose_flags = ['-v', '-v']
+
     if platform.system().lower() == 'windows' and platform.machine().lower() in {
         'arm64',
         'aarch64',
@@ -133,6 +137,7 @@ def main(argv: list[str]) -> int:
             '@tauri-apps/cli-win32-arm64-msvc',
             'tauri',
             'build',
+            *verbose_flags,
             '--config=src-tauri/tauri.bundle.json',
             '--',
             '--profile',
@@ -147,6 +152,7 @@ def main(argv: list[str]) -> int:
             'pnpm',
             'tauri',
             'build',
+            *verbose_flags,
             '--config=src-tauri/tauri.bundle.json',
             '--',
             '--profile',
