@@ -57,7 +57,13 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            desktop-file-utils \
+            libfuse2
 
       - name: Install project dependencies
         run: mise x pnpm -- pnpm install
@@ -81,6 +87,9 @@ jobs:
 
       - name: Build bundle (macOS/Linux)
         if: runner.os != 'Windows'
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: '1'
+          DEBUG: '1'
         run: mise x uv -- uv run ./scripts/build_app.py
 
       - name: Zip macOS .app bundle
@@ -126,3 +135,4 @@ jobs:
             desktop/target/**/bundle/nsis/*.exe
             desktop/target/**/bundle/deb/*.deb
             desktop/target/**/bundle/rpm/*.rpm
+            desktop/target/**/bundle/appimage/*.AppImage
