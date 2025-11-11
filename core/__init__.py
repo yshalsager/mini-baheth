@@ -26,7 +26,10 @@ from core.schemas import (
     SearchRequest,
 )
 
-RGA_FILE_FILTERS: tuple[str, ...] = ('*.doc', '*.docx', '*.json', '*.md', '*.pdf')
+RGA_FILE_FILTERS: tuple[str, ...] = (
+    '*.doc', '*.docx', '*.pdf', '*.json', '*.md',
+    '*.epub', '*.odt', '*.fb2', '*.ipynb', '*.html', '*.htm'
+)
 DIR_CACHE_TTL = 60
 MAX_DEPTH = 3
 
@@ -352,6 +355,15 @@ def read_file_lines(path: Path) -> list[str]:
         if ext == '.doc' and which('antiword'):
             proc = subprocess.run(
                 ['antiword', str(path)],
+                capture_output=True,
+                check=False,
+            )
+            text = proc.stdout.decode('utf-8', errors='replace')
+            return text.splitlines()
+        if which('pandoc') and ext in {'.epub', '.odt', '.fb2', '.ipynb', '.html', '.htm'}:
+            fmt = 'html' if ext == '.htm' else ext.lstrip('.')
+            proc = subprocess.run(
+                ['pandoc', '-f', fmt, '-t', 'plain', str(path)],
                 capture_output=True,
                 check=False,
             )
