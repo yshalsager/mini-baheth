@@ -3,7 +3,11 @@ rust = "1.89.0"
 node = "24"
 "aqua:pnpm/pnpm" = 'latest'
 
+[tasks.prep]
+run = "uv pip install -e src-tauri"
+
 [tasks.dev]
+depends = "prep"
 run = "pnpm tauri dev"
 
 [tasks.'build']
