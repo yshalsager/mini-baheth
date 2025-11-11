@@ -20,7 +20,7 @@ def main(argv: list[str]) -> int:
     root = Path(__file__).resolve().parents[1]
     os.chdir(root)
 
-    project_name = 'mini-baheth-desktop'
+    project_name = 'mini-baheth'
 
     def mise_which(name: str) -> str | None:
         try:
