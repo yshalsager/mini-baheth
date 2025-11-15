@@ -3,10 +3,10 @@
   "extends": [
     "config:recommended"
   ],
-  schedule: ["before 5am on saturday"],
-  lockFileMaintenance: {
-    enabled: true,
-    automerge: true,
-    schedule: ["before 5am on saturday"],
-  },
+  "schedule": ["before 5am on saturday"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 5am on saturday"]
+  }
 }
