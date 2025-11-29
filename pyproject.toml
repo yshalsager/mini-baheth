@@ -5,7 +5,7 @@ description = "Ripgrep Web UI"
 readme = "README.md"
 requires-python = ">=3.13.8,<3.13.9"
 dependencies = [
-    "granian[reload, rloop]>=2.5.5,<3",
+    "granian[reload, rloop]>=2.6.0,<3",
     "nanodjango>=0.12.2",
     "orjson>=3.11.4",
     "mini-baheth-core",
