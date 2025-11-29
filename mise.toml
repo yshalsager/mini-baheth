@@ -12,6 +12,18 @@ python = "3.13.8"
 alias = 'default'
 run = 'uv run granian webapp.app:app.asgi'
 
+[tasks.'update_dependencies:web']
+run = [
+  'uv lock -U',
+  'uv sync --inexact',
+  'cd core',
+  'uv lock -U',
+  'uv sync --inexact',
+]
+
+[tasks.update_dependencies]
+depends = ["//:update_dependencies:web", "//desktop:update_dependencies"]
+
 [env]
 # Granian configuration
 GRANIAN_HOST = '127.0.0.1'

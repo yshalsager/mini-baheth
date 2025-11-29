@@ -12,3 +12,6 @@ run = "pnpm tauri dev"
 
 [tasks.'build']
 run = "uv run ./scripts/build_app.py"
+
+[tasks.'update_dependencies']
+run = ['pnpm dlx npm-check-updates -u', 'pnpm install']
