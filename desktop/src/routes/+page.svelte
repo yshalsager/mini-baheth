@@ -28,6 +28,7 @@
   import type { UnlistenFn } from "@tauri-apps/api/event";
   import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
+  import { check } from "@tauri-apps/plugin-updater";
   import { resetMode, setMode, userPrefersMode } from "mode-watcher";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
@@ -105,6 +106,22 @@
     void start_search();
   }, 400);
 
+  async function run_update_check(manual: boolean) {
+    if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) return;
+    try {
+      const update = await check();
+      if (!update) {
+        if (manual) toast("لا توجد تحديثات متاحة حاليًا");
+        return;
+      }
+      toast("جارٍ تنزيل التحديث وتثبيته...");
+      await update.downloadAndInstall();
+      toast.success("تم تثبيت التحديث. أعد تشغيل التطبيق لتطبيقه.");
+    } catch (error) {
+      if (manual) toast.error("فشل التحقق من التحديثات");
+    }
+  }
+
   onMount(() => {
     const disposers: UnlistenFn[] = [];
 
@@ -171,6 +188,7 @@
 
     void setup();
     void load_root_and_directories();
+    void run_update_check(false);
 
     return () => {
       disposers.forEach(fn => fn());
@@ -485,6 +503,7 @@
                 } catch {}
               }}>الدليل</MenubarItem
             >
+            <MenubarItem onclick={() => run_update_check(true)}>التحقق من التحديثات</MenubarItem>
           </MenubarContent>
         </MenubarMenu>
       </Menubar>

@@ -31,5 +31,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk4NDM5MEIyMzU0NjZEODQKUldTRWJVWTFzcEJEbUw0dnZ4SmsxOEVtY21DK2Z0OVAxQU9WY0tUMVlnYnRhbERLb0VHeVVRd1oK",
+      "endpoints": [
+        "https://github.com/yshalsager/mini-baheth/releases/latest/download/updates-{{target}}-{{arch}}.json"
+      ]
+    }
   }
 }

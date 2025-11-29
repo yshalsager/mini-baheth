@@ -29,4 +29,6 @@ tmp_*
 # PyTauri
 desktop/src-tauri/pyembed/
 desktop/src-tauri/target/
+desktop/tauri.updater.key*
+desktop/updates/
 .svelte-kit/

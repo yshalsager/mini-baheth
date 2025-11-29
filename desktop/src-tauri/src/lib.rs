@@ -26,6 +26,12 @@ pub mod ext_mod {
                 let builder = tauri::Builder::default()
                     .plugin(tauri_plugin_dialog::init())
                     .plugin(tauri_plugin_opener::init())
+                    .setup(|app| {
+                        #[cfg(desktop)]
+                        app.handle()
+                            .plugin(tauri_plugin_updater::Builder::new().build())?;
+                        Ok(())
+                    })
                     .invoke_handler(tauri::generate_handler![greet]);
                 Ok(builder)
             },

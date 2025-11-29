@@ -19,6 +19,9 @@ jobs:
   publish-tauri:
     permissions:
       contents: write
+    env:
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
     strategy:
       fail-fast: false
       matrix:
@@ -92,16 +95,6 @@ jobs:
           # DEBUG: '1'
         run: mise x uv -- uv run ./scripts/build_app.py
 
-      - name: Zip macOS .app bundle
-        if: runner.os == 'macOS'
-        run: |
-          shopt -s nullglob
-          for app in target/**/bundle/macos/*.app; do
-            zip="${app%.*}-macos-${{ matrix.target }}.zip"
-            echo "Zipping $app -> $zip"
-            ditto -c -k --sequesterRsrc --keepParent "$app" "$zip"
-          done
-
       - name: Build bundle (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -119,6 +112,100 @@ jobs:
             const cfg = JSON.parse(fs.readFileSync(p, 'utf8'))
             core.setOutput('version', cfg.version)
 
+      - name: Generate updater manifest for this target
+        id: updater_manifest
+        uses: actions/github-script@v8
+        env:
+          TARGET_TRIPLE: ${{ matrix.target }}
+          VERSION: ${{ steps.get_version.outputs.version }}
+        with:
+          script: |
+            const fs = require('fs')
+            const path = require('path')
+            const repo = process.env.GITHUB_REPOSITORY
+            const version = process.env.VERSION
+            const triple = process.env.TARGET_TRIPLE
+
+            function findFile(root, predicate) {
+              if (!fs.existsSync(root)) return null
+              const entries = fs.readdirSync(root, { withFileTypes: true })
+              for (const entry of entries) {
+                const full = path.join(root, entry.name)
+                if (entry.isDirectory()) {
+                  const found = findFile(full, predicate)
+                  if (found) return found
+                } else if (predicate(full)) {
+                  return full
+                }
+              }
+              return null
+            }
+
+            if (!version) {
+              core.warning('No version found, skipping updater manifest generation')
+              return
+            }
+
+            const targetRoot = path.join('desktop', 'target')
+
+            let updaterPattern
+            if (triple.includes('apple-darwin')) {
+              updaterPattern = p => p.includes(path.join('bundle', 'macos')) && p.endsWith('.app.tar.gz')
+            } else if (triple.includes('unknown-linux-gnu')) {
+              updaterPattern = p => p.includes(path.join('bundle', 'appimage')) && p.endsWith('.AppImage')
+            } else if (triple.includes('pc-windows-msvc')) {
+              updaterPattern = p => p.includes(path.join('bundle', 'nsis')) && p.endsWith('-setup.exe')
+            } else {
+              core.warning(`Unsupported target triple ${triple}, skipping updater manifest`)
+              return
+            }
+
+            const updaterPath = findFile(targetRoot, updaterPattern)
+            if (!updaterPath) {
+              core.warning(`No updater bundle found for ${triple}, skipping updater manifest`)
+              return
+            }
+
+            const sigPath = `${updaterPath}.sig`
+            if (!fs.existsSync(sigPath)) {
+              core.warning(`No signature file found at ${sigPath}, skipping updater manifest`)
+              return
+            }
+
+            const signature = fs.readFileSync(sigPath, 'utf8').trim()
+
+            let os, arch
+            if (triple.includes('apple-darwin')) {
+              os = 'darwin'
+              arch = triple.startsWith('x86_64') ? 'x86_64' : 'aarch64'
+            } else if (triple.includes('unknown-linux-gnu')) {
+              os = 'linux'
+              arch = triple.startsWith('x86_64') ? 'x86_64' : 'aarch64'
+            } else {
+              os = 'windows'
+              arch = 'x86_64'
+            }
+
+            const targetKey = `${os}-${arch}`
+            const outDir = path.join('desktop', 'updates')
+            fs.mkdirSync(outDir, { recursive: true })
+            const assetName = path.basename(updaterPath)
+            const tag = `v${version}`
+            const url = `https://github.com/${repo}/releases/download/${tag}/${assetName}`
+            const outPath = path.join(outDir, `updates-${targetKey}.json`)
+
+            const payload = {
+              version,
+              pub_date: new Date().toISOString(),
+              url,
+              signature,
+              notes: ''
+            }
+
+            fs.writeFileSync(outPath, JSON.stringify(payload), 'utf8')
+            core.info(`Wrote updater manifest to ${outPath}`)
+            core.setOutput('json_path', outPath)
+
       - name: Create/Update GitHub Release and upload artifacts
         uses: softprops/action-gh-release@v2
         with:
@@ -130,8 +217,10 @@ jobs:
           fail_on_unmatched_files: false
           files: |
             desktop/target/**/bundle/dmg/*.dmg
-            desktop/target/**/bundle/macos/*.zip
+            desktop/target/**/bundle/macos/*.app.tar.gz
             desktop/target/**/bundle/msi/*.msi
             desktop/target/**/bundle/nsis/*.exe
             desktop/target/**/bundle/deb/*.deb
             desktop/target/**/bundle/rpm/*.rpm
+            desktop/target/**/bundle/appimage/*.AppImage
+            desktop/updates/*.json
