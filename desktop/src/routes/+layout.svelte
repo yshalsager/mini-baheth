@@ -1,20 +1,19 @@
-<script>
+<script lang="ts">
   import "../app.css";
   import { ModeWatcher } from "mode-watcher";
   import { Toaster } from "$lib/components/ui/sonner";
-  import { loadLocale } from "wuchale/load-utils";
-  import "../locales/main.loader.svelte.js";
+  import { onMount } from "svelte";
+  import { init_locale } from "$lib/stores/locale";
 
   let { children } = $props();
-  let locale = $state("ar");
+
+  onMount(() => {
+    void init_locale();
+  });
 </script>
 
 <ModeWatcher />
-{#await loadLocale(locale)}
-  <!-- Loading translations -->
-{:then}
-  <div dir="rtl">
-    {@render children()}
-  </div>
-  <Toaster richColors expand />
-{/await}
+<div>
+  {@render children()}
+</div>
+<Toaster richColors expand />

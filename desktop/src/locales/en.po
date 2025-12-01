@@ -151,8 +151,8 @@ msgstr "Search finished"
 msgid "جاهز"
 msgstr "Ready"
 
-#. placeholder {0}: shown_count
-#. placeholder {1}: total_count
+#. placeholder {0}: format_number(shown_count)
+#. placeholder {1}: format_number(total_count)
 #: src/routes/+page.svelte
 msgid "تعرض {0} من {1} نتيجة"
 msgstr "Showing {0} of {1} results"
@@ -364,3 +364,7 @@ msgstr "Open file"
 #: src/lib/components/ResultsList.svelte
 msgid "إظهار في المجلد"
 msgstr "Show in folder"
+
+#: src/routes/+page.svelte
+msgid "اللغة"
+msgstr "Language"

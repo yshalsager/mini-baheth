@@ -33,6 +33,7 @@
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import logo_url from "$lib/assets/logo.svg";
+  import { apply_locale, locale as locale_store, available_locales, format_number } from "$lib/stores/locale";
 
   import type { SearchCompletePayload, SearchErrorPayload, SearchMatchPayload, SearchStartedPayload } from "$lib/types";
 
@@ -189,7 +190,6 @@
     void setup();
     void load_root_and_directories();
     void run_update_check(false);
-
     return () => {
       disposers.forEach(fn => fn());
     };
@@ -494,6 +494,16 @@
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
+          <MenubarTrigger>اللغة</MenubarTrigger>
+          <MenubarContent>
+            {#each $available_locales as option (option.locale)}
+              <MenubarItem onclick={() => apply_locale(option.locale)}
+                >{($locale_store === option.locale ? "✓ " : "") + option.name}</MenubarItem
+              >
+            {/each}
+          </MenubarContent>
+        </MenubarMenu>
+        <MenubarMenu>
           <MenubarTrigger>مساعدة</MenubarTrigger>
           <MenubarContent>
             <MenubarItem
@@ -608,7 +618,7 @@
           {/if}
         </div>
         <div class="flex items-center gap-3">
-          <span>تعرض {shown_count} من {total_count} نتيجة</span>
+          <span>تعرض {format_number(shown_count)} من {format_number(total_count)} نتيجة</span>
           <span>|</span>
           <span>مدة البحث: {format_elapsed(elapsed_ms)}</span>
         </div>
