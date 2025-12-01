@@ -1,0 +1,366 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-29T21:08:27.683Z\n"
+"PO-Revision-Date: 2025-11-29T21:08:27.683Z\n"
+"Last-Translator: \n"
+"Language: en\n"
+"Language-Team: \n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
+"MIME-Version: 1.0\n"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "جارٍ البحث..."
+msgstr "Searching..."
+
+#: src/routes/+page.svelte
+msgid "لم يتم العثور على نتائج"
+msgstr "No results found"
+
+#: src/routes/+page.svelte
+msgid "None"
+msgstr "None"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "فتح مجلد"
+msgstr "Open folder"
+
+#: src/routes/+page.svelte
+msgid "إعادة تعيين مرشح المجلدات"
+msgstr "Reset folder filter"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "مسح البحث"
+msgstr "Clear search"
+
+#: src/routes/+page.svelte
+msgid "mini-baheth"
+msgstr "mini-baheth"
+
+#: src/routes/+page.svelte
+msgid "ملف"
+msgstr "File"
+
+#: src/routes/+page.svelte
+msgid "تحرير"
+msgstr "Edit"
+
+#: src/routes/+page.svelte
+msgid "عرض"
+msgstr "View"
+
+#: src/routes/+page.svelte
+msgid "تبديل التفاف السطور"
+msgstr "Toggle wrap"
+
+#: src/routes/+page.svelte
+msgid "تصغير الخط"
+msgstr "Decrease font"
+
+#: src/routes/+page.svelte
+msgid "تكبير الخط"
+msgstr "Increase font"
+
+#. placeholder {0}: userPrefersMode.current === "light" ? "✓ " : ""
+#: src/routes/+page.svelte
+msgid "{0}الوضع الفاتح"
+msgstr "{0}Light mode"
+
+#. placeholder {0}: userPrefersMode.current === "dark" ? "✓ " : ""
+#: src/routes/+page.svelte
+msgid "{0}الوضع الداكن"
+msgstr "{0}Dark mode"
+
+#. placeholder {0}: userPrefersMode.current === "system" ? "✓ " : ""
+#: src/routes/+page.svelte
+msgid "{0}مطابق للنظام"
+msgstr "{0}Match system"
+
+#: src/routes/+page.svelte
+msgid "مساعدة"
+msgstr "Help"
+
+#: src/routes/+page.svelte
+msgid "الدليل"
+msgstr "Guide"
+
+#: src/routes/+page.svelte
+msgid "التحقق من التحديثات"
+msgstr "Check for updates"
+
+#: src/routes/+page.svelte
+msgid "ابدأ بكتابة عبارة البحث لعرض النتائج."
+msgstr "Start typing a query to see results."
+
+#: src/routes/+page.svelte
+msgid "جارٍ جمع النتائج..."
+msgstr "Collecting results..."
+
+#: src/routes/+page.svelte
+msgid "لم يتم العثور على نتائج مطابقة."
+msgstr "No matching results found."
+
+#: src/routes/+page.svelte
+msgid "خيارات الترتيب"
+msgstr "Sort options"
+
+#: src/routes/+page.svelte
+msgid "ترتيب"
+msgstr "Sort"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "افتراضي (بدون ترتيب)"
+msgstr "Default (no sort)"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "الاسم (A→Z)"
+msgstr "Name (A→Z)"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "الاسم (Z→A)"
+msgstr "Name (Z→A)"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "تاريخ الإضافة (الأحدث أولًا)"
+msgstr "Added (newest first)"
+
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "تاريخ الإضافة (الأقدم أولًا)"
+msgstr "Added (oldest first)"
+
+#: src/routes/+page.svelte
+msgid "فشل البحث"
+msgstr "Search failed"
+
+#: src/routes/+page.svelte
+msgid "انتهى البحث"
+msgstr "Search finished"
+
+#: src/routes/+page.svelte
+msgid "جاهز"
+msgstr "Ready"
+
+#. placeholder {0}: shown_count
+#. placeholder {1}: total_count
+#: src/routes/+page.svelte
+msgid "تعرض {0} من {1} نتيجة"
+msgstr "Showing {0} of {1} results"
+
+#. placeholder {0}: format_elapsed(elapsed_ms)
+#: src/routes/+page.svelte
+msgid "مدة البحث: {0}"
+msgstr "Search time: {0}"
+
+#: src/routes/+page.svelte
+msgid "ابحث عن أمر..."
+msgstr "Search for a command..."
+
+#: src/routes/+page.svelte
+msgid "لا توجد أوامر مطابقة."
+msgstr "No matching commands."
+
+#: src/routes/+page.svelte
+msgid "بحث"
+msgstr "Search"
+
+#. placeholder {0}: cmd_query || query
+#. placeholder {0}: cmd_query || query
+#: src/routes/+page.svelte
+#: src/routes/+page.svelte
+msgid "ابحث: {0}"
+msgstr "Search: {0}"
+
+#: src/routes/+page.svelte
+msgid "الأوامر"
+msgstr "Commands"
+
+#: src/lib/components/DirectoryPicker.svelte
+msgid "جاري تحميل المجلدات..."
+msgstr "Loading folders..."
+
+#: src/lib/components/FileFilterSelect.svelte
+#: src/lib/components/FileFilterSelect.svelte
+msgid "الكل"
+msgstr "All"
+
+#: src/lib/components/SearchInput.svelte
+msgid "عبارة البحث"
+msgstr "Search query"
+
+#: src/lib/components/SearchInput.svelte
+msgid "ابحث عن شيء ما"
+msgstr "Search for something"
+
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/SearchInput.svelte
+msgid "Enter"
+msgstr "Enter"
+
+#: src/lib/components/SearchInput.svelte
+msgid "نمط البحث"
+msgstr "Search mode"
+
+#: src/lib/components/SearchInput.svelte
+#: src/lib/components/SearchInput.svelte
+msgid "ذكي"
+msgstr "Smart"
+
+#: src/lib/components/SearchInput.svelte
+#: src/lib/components/SearchInput.svelte
+msgid "تعبير اعتيادي"
+msgstr "Regex"
+
+#: src/lib/components/SearchInput.svelte
+#: src/lib/components/SearchInput.svelte
+msgid "تجاهل التشكيل"
+msgstr "Ignore diacritics"
+
+#: src/lib/components/SearchInput.svelte
+#: src/lib/components/SearchInput.svelte
+msgid "التزام التشكيل"
+msgstr "Require diacritics"
+
+#: src/lib/components/SearchInput.svelte
+#: src/lib/components/SearchInput.svelte
+msgid "Clear"
+msgstr "Clear"
+
+#. placeholder {0}: data_root
+#: src/lib/components/SearchPanel.svelte
+msgid ""
+"المجلد الحالي:\n"
+"‎{0}"
+msgstr ""
+"Current folder:\n"
+"{0}"
+
+#: src/lib/components/SearchPanel.svelte
+msgid "لم يتم اختيار مجلد البيانات بعد"
+msgstr "No data folder selected yet"
+
+#: src/lib/components/FileFilterSelect.svelte
+msgid "نوع الملف"
+msgstr "File type"
+
+#: src/lib/components/FilePreviewContent.svelte
+msgid "جارٍ تحميل الملف..."
+msgstr "Loading file..."
+
+#: src/lib/components/FilePreviewContent.svelte
+msgid "لا يوجد محتوى للعرض."
+msgstr "No content to display."
+
+#: src/lib/components/FilePreviewContent.svelte
+#: src/lib/components/FilePreviewContent.svelte
+msgid "نسخ السطر"
+msgstr "Copy line"
+
+#: src/lib/components/DirectoryPicker.svelte
+msgid "المجلدات"
+msgstr "Folders"
+
+#: src/lib/components/DirectoryPicker.svelte
+msgid "ابحث عن مجلد..."
+msgstr "Search for a folder..."
+
+#. placeholder {0}: line_number
+#. placeholder {0}: line_number
+#: src/lib/components/FileViewerDialog.svelte
+#: src/lib/components/InlineFilePreview.svelte
+msgid "سطر {0}"
+msgstr "Line {0}"
+
+#: src/lib/components/FileViewerDialog.svelte
+msgid "إغلاق"
+msgstr "Close"
+
+#: src/lib/components/InlineFilePreview.svelte
+msgid "تصغير"
+msgstr "Smaller"
+
+#: src/lib/components/InlineFilePreview.svelte
+msgid "تكبير"
+msgstr "Larger"
+
+#: src/lib/components/InlineFilePreview.svelte
+#: src/lib/components/InlineFilePreview.svelte
+msgid "التفاف"
+msgstr "Wrap"
+
+#: src/lib/components/InlineFilePreview.svelte
+msgid "سطر واحد"
+msgstr "Single line"
+
+#: src/lib/components/InlineFilePreview.svelte
+msgid "نسخ الكل"
+msgstr "Copy all"
+
+#: src/lib/components/InlineFilePreview.svelte
+msgid "نسخ"
+msgstr "Copy"
+
+#: src/lib/components/ResultsList.svelte
+msgid "ArrowDown"
+msgstr "ArrowDown"
+
+#: src/lib/components/ResultsList.svelte
+msgid "ArrowUp"
+msgstr "ArrowUp"
+
+#: src/lib/components/ResultsList.svelte
+msgid "النتائج"
+msgstr "Results"
+
+#: src/lib/components/ResultsList.svelte
+msgid "الملف"
+msgstr "File"
+
+#: src/lib/components/ResultsList.svelte
+msgid "السطر"
+msgstr "Line"
+
+#: src/lib/components/ResultsList.svelte
+msgid "التاريخ"
+msgstr "Date"
+
+#: src/lib/components/ResultsList.svelte
+msgid "المقتطف"
+msgstr "Snippet"
+
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/ResultsList.svelte
+msgid "افتح عند السطر"
+msgstr "Open at line"
+
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/ResultsList.svelte
+msgid "المزيد"
+msgstr "More"
+
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/ResultsList.svelte
+msgid "نسخ المسار"
+msgstr "Copy path"
+
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/ResultsList.svelte
+msgid "فتح الملف"
+msgstr "Open file"
+
+#: src/lib/components/ResultsList.svelte
+#: src/lib/components/ResultsList.svelte
+msgid "إظهار في المجلد"
+msgstr "Show in folder"

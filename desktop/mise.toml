@@ -18,3 +18,6 @@ run = "pnpm run tauri signer generate --ci --write-keys tauri.updater.key"
 
 [tasks.'update_dependencies']
 run = ['pnpm dlx npm-check-updates -u', 'pnpm install']
+
+[tasks.i18n_update]
+run = 'pnpm exec wuchale --clean'

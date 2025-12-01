@@ -1,10 +1,11 @@
-import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite";
-import { sveltekit } from "@sveltejs/kit/vite";
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
+import { sveltekit } from '@sveltejs/kit/vite'
+import { wuchale } from '@wuchale/vite-plugin'
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [tailwindcss(), sveltekit()],
+  plugins: [wuchale(), tailwindcss(), sveltekit()],
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors
@@ -15,7 +16,7 @@ export default defineConfig(async () => ({
     strictPort: true,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**", "**/.venv/**"]
-    }
-  }
-}));
+      ignored: ['**/src-tauri/**', '**/.venv/**'],
+    },
+  },
+}))

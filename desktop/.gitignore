@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+src/locales/.wuchale
+src/locales/data.js
 
 # Editor directories and files
 .vscode/*

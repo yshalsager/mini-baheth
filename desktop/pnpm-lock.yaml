@@ -20,6 +20,9 @@ importers:
       '@tauri-apps/plugin-updater':
         specifier: ^2
         version: 2.9.0
+      '@wuchale/svelte':
+        specifier: ^0.17.5
+        version: 0.17.5
       tauri-plugin-pytauri-api:
         specifier: ^0.8.0
         version: 0.8.0
@@ -51,6 +54,9 @@ importers:
       '@tauri-apps/cli':
         specifier: ^2
         version: 2.9.4
+      '@wuchale/vite-plugin':
+        specifier: ^0.15.3
+        version: 0.15.3
       bits-ui:
         specifier: ^2.14.4
         version: 2.14.4(@internationalized/date@3.10.0)(@sveltejs/kit@2.49.0(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.45.2)(vite@7.2.4(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.45.2)(vite@7.2.4(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.45.2)
@@ -90,6 +96,9 @@ importers:
       vite:
         specifier: ^7.2.4
         version: 7.2.4(jiti@2.6.1)(lightningcss@1.30.2)
+      wuchale:
+        specifier: ^0.18.5
+        version: 0.18.5
 
 packages:
 
@@ -628,6 +637,12 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@wuchale/svelte@0.17.5':
+    resolution: {integrity: sha512-JaCUGuIMa4MFZBo9IC858kxy5HunKA/gFbzZ0Tyv2O2IAdvP6D8g4VWzWxtISLmr35DRN7MDomGoJws3U8f8QA==}
+
+  '@wuchale/vite-plugin@0.15.3':
+    resolution: {integrity: sha512-GtPT1gwAGJAb1oc7R5MuGyl1R8m50QdoqFiW/76g2e81d9iPUYNi/CTg8BEeg4WmQJ+91JRR//rwgEo+jG0fZQ==}
+
   acorn@8.15.0:
     resolution: {integrity: sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==}
     engines: {node: '>=0.4.0'}
@@ -845,12 +860,18 @@ packages:
     peerDependencies:
       svelte: ^5.29.0
 
+  path-to-regexp@8.3.0:
+    resolution: {integrity: sha512-7jdwVIRtsP8MYpdXSwOS0YdD0Du+qOoF/AEPIt88PcCFrZCzx41oxku1jD88hZBwbNUIEfpqvuhjFaMAqMTWnA==}
+
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
+
+  pofile@1.1.4:
+    resolution: {integrity: sha512-r6Q21sKsY1AjTVVjOuU02VYKVNQGJNQHjTIvs4dEbeuuYfxgYk/DGD2mqqq4RDaVkwdSq0VEtmQUOPe/wH8X3g==}
 
   postcss-selector-parser@6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
@@ -1046,6 +1067,10 @@ packages:
     peerDependenciesMeta:
       vite:
         optional: true
+
+  wuchale@0.18.5:
+    resolution: {integrity: sha512-jCKAKIalzgQsIAC7HFKSHE1zGqTwN9K+44kJ32MNt3Vw9maJS3HBrI9DzER361d/iWApEqTG+SYTyDNGcXxS0A==}
+    hasBin: true
 
   zimmerframe@1.1.4:
     resolution: {integrity: sha512-B58NGBEoc8Y9MWWCQGl/gq9xBCe4IiKM0a2x7GZdQKOW5Exr8S1W24J6OgM1njK8xCRGvAJIL/MxXHf6SkmQKQ==}
@@ -1433,6 +1458,15 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@wuchale/svelte@0.17.5':
+    dependencies:
+      svelte: 5.45.2
+      wuchale: 0.18.5
+
+  '@wuchale/vite-plugin@0.15.3':
+    dependencies:
+      wuchale: 0.18.5
+
   acorn@8.15.0: {}
 
   aria-query@5.3.2: {}
@@ -1612,9 +1646,13 @@ snapshots:
       svelte: 5.45.2
       svelte-toolbelt: 0.9.3(svelte@5.45.2)
 
+  path-to-regexp@8.3.0: {}
+
   picocolors@1.1.1: {}
 
   picomatch@4.0.3: {}
+
+  pofile@1.1.4: {}
 
   postcss-selector-parser@6.0.10:
     dependencies:
@@ -1811,5 +1849,16 @@ snapshots:
   vitefu@1.1.1(vite@7.2.4(jiti@2.6.1)(lightningcss@1.30.2)):
     optionalDependencies:
       vite: 7.2.4(jiti@2.6.1)(lightningcss@1.30.2)
+
+  wuchale@0.18.5:
+    dependencies:
+      '@sveltejs/acorn-typescript': 1.0.6(acorn@8.15.0)
+      acorn: 8.15.0
+      chokidar: 4.0.3
+      magic-string: 0.30.21
+      path-to-regexp: 8.3.0
+      picomatch: 4.0.3
+      pofile: 1.1.4
+      tinyglobby: 0.2.15
 
   zimmerframe@1.1.4: {}
