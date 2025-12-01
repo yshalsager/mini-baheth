@@ -136,7 +136,8 @@
   function byte_offset_to_index(text: string, offset: number) {
     if (offset <= 0) return 0;
     let bytes = 0;
-    for (let i = 0; i < text.length; ) {
+    let i = 0;
+    while (i < text.length) {
       if (bytes >= offset) return i;
       const code_point = text.codePointAt(i);
       if (code_point === undefined) break;
