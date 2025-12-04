@@ -368,3 +368,27 @@ msgstr "Show in folder"
 #: src/routes/+page.svelte
 msgid "اللغة"
 msgstr "Language"
+
+#: src/routes/+page.svelte
+msgid "لا توجد تحديثات متاحة حاليًا"
+msgstr "No available updates currently"
+
+#: src/routes/+page.svelte
+msgid "جارٍ تنزيل التحديث وتثبيته..."
+msgstr "Downloading and installing the update..."
+
+#: src/routes/+page.svelte
+msgid "تم تثبيت التحديث. أعد تشغيل التطبيق لتطبيقه."
+msgstr "Installed the update, restart to apply it>"
+
+#: src/routes/+page.svelte
+msgid "فشل التحقق من التحديثات"
+msgstr "Checking for update failed"
+
+#: src/lib/components/ResultsList.svelte
+msgid "فشل فتح الملف:"
+msgstr "Failed to open file:"
+
+#: src/lib/components/ResultsList.svelte
+msgid "فشل إظهار الملف في المجلد:"
+msgstr "Failed to show file in a folder:"

@@ -368,3 +368,27 @@ msgstr "إظهار في المجلد"
 #: src/routes/+page.svelte
 msgid "اللغة"
 msgstr "اللغة"
+
+#: src/routes/+page.svelte
+msgid "لا توجد تحديثات متاحة حاليًا"
+msgstr "لا توجد تحديثات متاحة حاليًا"
+
+#: src/routes/+page.svelte
+msgid "جارٍ تنزيل التحديث وتثبيته..."
+msgstr "جارٍ تنزيل التحديث وتثبيته..."
+
+#: src/routes/+page.svelte
+msgid "تم تثبيت التحديث. أعد تشغيل التطبيق لتطبيقه."
+msgstr "تم تثبيت التحديث. أعد تشغيل التطبيق لتطبيقه."
+
+#: src/routes/+page.svelte
+msgid "فشل التحقق من التحديثات"
+msgstr "فشل التحقق من التحديثات"
+
+#: src/lib/components/ResultsList.svelte
+msgid "فشل فتح الملف:"
+msgstr "فشل فتح الملف:"
+
+#: src/lib/components/ResultsList.svelte
+msgid "فشل إظهار الملف في المجلد:"
+msgstr "فشل إظهار الملف في المجلد:"
