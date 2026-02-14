@@ -15,13 +15,19 @@
       "allowedVersions": "<0.26.0"
     },
     {
+      "matchDatasources": ["python-version"],
+      "matchPackageNames": ["python"],
+      "enabled": false
+    },
+    {
       "matchManagers": ["pep621"],
       "matchDepTypes": ["requires-python"],
       "enabled": false
     },
     {
       "matchManagers": ["mise"],
-      "matchPackageNames": ["python"],
+      "matchDepNames": ["python"],
+      "matchPackageNames": ["python", "python/cpython"],
       "enabled": false
     },
     {
