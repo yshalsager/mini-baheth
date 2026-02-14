@@ -13,6 +13,21 @@
       "matchManagers": ["cargo"],
       "matchPackageNames": ["pyo3", "pyo3-build-config", "pyo3-ffi", "pyo3-macros"],
       "allowedVersions": "<0.26.0"
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["requires-python"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["python"],
+      "enabled": false
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["public.ecr.aws/docker/library/python"],
+      "enabled": false
     }
   ],
   "schedule": ["before 5am on saturday"],
