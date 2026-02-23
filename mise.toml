@@ -2,11 +2,11 @@ experimental_monorepo_root = true
 
 [tools]
 python = "3.13.8"
-"aqua:astral-sh/uv" = '0.10.2'
+"aqua:astral-sh/uv" = '0.10.4'
 "aqua:BurntSushi/ripgrep" = '15.1.0'
 "github:phiresky/ripgrep-all" = '0.10.10'
 "aqua:tomnomnom/gron" = '0.7.1'
-"github:jgm/pandoc" = '3.8'
+"github:jgm/pandoc" = '3.9'
 
 [tasks.web]
 alias = 'default'
