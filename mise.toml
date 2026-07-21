@@ -1,4 +1,7 @@
-experimental_monorepo_root = true
+monorepo_root = true
+
+[monorepo]
+config_roots = ["desktop"]
 
 [tools]
 python = "3.13.8"
