@@ -82,29 +82,29 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "6.0.2"
+version = "6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/26/3e/a1c4207c5dea4697b7a3387e26584919ba987d8f9320f59dc0b5c557a4eb/django-6.0.2.tar.gz", hash = "sha256:3046a53b0e40d4b676c3b774c73411d7184ae2745fe8ce5e45c0f33d3ddb71a7", size = 10886874, upload-time = "2026-02-03T13:50:31.596Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e2/42/6cb20996733984c1f6661daeda3877990836c76c633c6c8879d39f7120eb/django-6.1.tar.gz", hash = "sha256:86a2aacd59b817e4d6ac2ebfe22356c58f66f7b24e503f71b7c2fead677ee48b", size = 11223034, upload-time = "2026-08-05T19:21:53.789Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/96/ba/a6e2992bc5b8c688249c00ea48cb1b7a9bc09839328c81dc603671460928/django-6.0.2-py3-none-any.whl", hash = "sha256:610dd3b13d15ec3f1e1d257caedd751db8033c5ad8ea0e2d1219a8acf446ecc6", size = 8339381, upload-time = "2026-02-03T13:50:15.501Z" },
+    { url = "https://files.pythonhosted.org/packages/91/9c/ce847620134cfab903e75690c498af73b46abbede2912ea89bd76d5c1e76/django-6.1-py3-none-any.whl", hash = "sha256:6c132cd980c9392b06807d4ca52d72530d631dc65a85d9dacede00a780cefbbe", size = 8417399, upload-time = "2026-08-05T19:21:47.285Z" },
 ]
 
 [[package]]
 name = "django-ninja"
-version = "1.5.3"
+version = "1.6.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/84/27a5fceac29bd85eb8dc8a6697e93019a8742d626180f0d67b894e20a8a1/django_ninja-1.5.3.tar.gz", hash = "sha256:974803944965ad0566071633ffd4999a956f2ad1ecbed815c0de37c1c969592b", size = 3658996, upload-time = "2026-01-10T20:02:23.821Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/57/71cc769a7410ade9bd1cddee16132e3da7718fcce1386c67ade7ea939677/django_ninja-1.6.3.tar.gz", hash = "sha256:a65a5016bbf044702fb1f1ff702f96dc3c806fbd7c918290512659531873039f", size = 2340438, upload-time = "2026-08-17T08:45:42.703Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f4/b3/30600696c2532fcf026259f2f4980b364cb6847518bb4b3365d42a4a3afe/django_ninja-1.5.3-py3-none-any.whl", hash = "sha256:0a6ead5b4e57ec1050b584eb6f36f105f256b8f4ac70d12e774d8b6dd91e2198", size = 2365685, upload-time = "2026-01-10T20:02:21.484Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/de/061d08265951765835166a2c69f0b99a8f49dfbea85d7d204ac87a236679/django_ninja-1.6.3-py3-none-any.whl", hash = "sha256:e83ba573e0f17b1d2fddca078613e2aaad512acb3d3c6bc9a5f1a0d9257dd70c", size = 2375010, upload-time = "2026-08-17T08:45:40.473Z" },
 ]
 
 [[package]]
