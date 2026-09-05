@@ -5,11 +5,11 @@ config_roots = ["desktop"]
 
 [tools]
 python = "3.13.8"
-"aqua:astral-sh/uv" = '0.11.29'
+"aqua:astral-sh/uv" = '0.12.10'
 "aqua:BurntSushi/ripgrep" = '15.2.0'
 "github:phiresky/ripgrep-all" = '0.10.10'
 "aqua:tomnomnom/gron" = '0.7.1'
-"github:jgm/pandoc" = '3.10'
+"github:jgm/pandoc" = '3.11'
 
 [tasks.web]
 alias = 'default'
