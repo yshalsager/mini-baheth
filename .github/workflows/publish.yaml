@@ -207,7 +207,7 @@ jobs:
             core.setOutput('json_path', outPath)
 
       - name: Create/Update GitHub Release and upload artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v${{ steps.get_version.outputs.version }}
