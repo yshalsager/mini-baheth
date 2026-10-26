@@ -1,10 +1,10 @@
 <script lang="ts">
-  import DirectoryPicker from "$lib/components/DirectoryPicker.svelte";
-  import FileFilterSelect from "$lib/components/FileFilterSelect.svelte";
-  import SearchInput from "$lib/components/SearchInput.svelte";
-  import { CardContent } from "$lib/components/ui/card";
-  import { Separator } from "$lib/components/ui/separator";
-  import { FILE_FILTERS } from "$lib/constants";
+  import DirectoryPicker from "#lib/components/DirectoryPicker.svelte";
+  import FileFilterSelect from "#lib/components/FileFilterSelect.svelte";
+  import SearchInput from "#lib/components/SearchInput.svelte";
+  import { CardContent } from "#lib/components/ui/card/index.js";
+  import { Separator } from "#lib/components/ui/separator/index.js";
+  import { FILE_FILTERS } from "#lib/constants.js";
 
   let {
     directory_search = $bindable(""),

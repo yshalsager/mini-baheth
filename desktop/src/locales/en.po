@@ -1,16 +1,12 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-29T21:08:27.683Z\n"
-"PO-Revision-Date: 2025-11-29T21:08:27.683Z\n"
-"Last-Translator: \n"
+"Source-Language: ar\n"
 "Language: en\n"
-"Language-Team: \n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
-"MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=2\n"
+"X-Plurals-Order: one, other\n"
 
 #: src/routes/+page.svelte
 #: src/routes/+page.svelte
@@ -67,17 +63,17 @@ msgstr "Decrease font"
 msgid "تكبير الخط"
 msgstr "Increase font"
 
-#. placeholder {0}: userPrefersMode.current === "light" ? "✓ " : ""
+#. 0: userPrefersMode.current === "light" ? "✓ " \\: ""
 #: src/routes/+page.svelte
 msgid "{0}الوضع الفاتح"
 msgstr "{0}Light mode"
 
-#. placeholder {0}: userPrefersMode.current === "dark" ? "✓ " : ""
+#. 0: userPrefersMode.current === "dark" ? "✓ " \\: ""
 #: src/routes/+page.svelte
 msgid "{0}الوضع الداكن"
 msgstr "{0}Dark mode"
 
-#. placeholder {0}: userPrefersMode.current === "system" ? "✓ " : ""
+#. 0: userPrefersMode.current === "system" ? "✓ " \\: ""
 #: src/routes/+page.svelte
 msgid "{0}مطابق للنظام"
 msgstr "{0}Match system"
@@ -151,13 +147,12 @@ msgstr "Search finished"
 msgid "جاهز"
 msgstr "Ready"
 
-#. placeholder {0}: format_number(shown_count)
-#. placeholder {1}: format_number(total_count)
+#. 0: format_number(shown_count); 1: format_number(total_count)
 #: src/routes/+page.svelte
 msgid "تعرض {0} من {1} نتيجة"
 msgstr "Showing {0} of {1} results"
 
-#. placeholder {0}: format_elapsed(elapsed_ms)
+#. 0: format_elapsed(elapsed_ms)
 #: src/routes/+page.svelte
 msgid "مدة البحث: {0}"
 msgstr "Search time: {0}"
@@ -174,8 +169,8 @@ msgstr "No matching commands."
 msgid "بحث"
 msgstr "Search"
 
-#. placeholder {0}: cmd_query || query
-#. placeholder {0}: cmd_query || query
+#. 0: cmd_query || query
+#. 0: cmd_query || query
 #: src/routes/+page.svelte
 #: src/routes/+page.svelte
 msgid "ابحث: {0}"
@@ -236,15 +231,6 @@ msgstr "Require diacritics"
 msgid "Clear"
 msgstr "Clear"
 
-#. placeholder {0}: data_root
-#: src/lib/components/SearchPanel.svelte
-msgid ""
-"المجلد الحالي:\n"
-"‎{0}"
-msgstr ""
-"Current folder:\n"
-"{0}"
-
 #: src/lib/components/SearchPanel.svelte
 msgid "لم يتم اختيار مجلد البيانات بعد"
 msgstr "No data folder selected yet"
@@ -274,8 +260,8 @@ msgstr "Folders"
 msgid "ابحث عن مجلد..."
 msgstr "Search for a folder..."
 
-#. placeholder {0}: line_number
-#. placeholder {0}: line_number
+#. 0: line_number
+#. 0: line_number
 #: src/lib/components/FileViewerDialog.svelte
 #: src/lib/components/InlineFilePreview.svelte
 msgid "سطر {0}"
@@ -386,9 +372,18 @@ msgid "فشل التحقق من التحديثات"
 msgstr "Checking for update failed"
 
 #: src/lib/components/ResultsList.svelte
-msgid "فشل فتح الملف:"
+msgid "فشل فتح الملف: "
 msgstr "Failed to open file:"
 
 #: src/lib/components/ResultsList.svelte
-msgid "فشل إظهار الملف في المجلد:"
+msgid "فشل إظهار الملف في المجلد: "
 msgstr "Failed to show file in a folder:"
+
+#. 0: data_root
+#: src/lib/components/SearchPanel.svelte
+msgid ""
+"المجلد الحالي: \n"
+"‎{0}"
+msgstr ""
+"Current folder: \n"
+"‎{0}"

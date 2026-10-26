@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button";
-  import FilePreviewContent from "$lib/components/FilePreviewContent.svelte";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import FilePreviewContent from "#lib/components/FilePreviewContent.svelte";
 
   let {
     file = "",

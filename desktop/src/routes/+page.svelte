@@ -1,8 +1,8 @@
 <script lang="ts">
-  import FileViewerDialog from "$lib/components/FileViewerDialog.svelte";
-  import InlineFilePreview from "$lib/components/InlineFilePreview.svelte";
-  import ResultsList from "$lib/components/ResultsList.svelte";
-  import SearchPanel from "$lib/components/SearchPanel.svelte";
+  import FileViewerDialog from "#lib/components/FileViewerDialog.svelte";
+  import InlineFilePreview from "#lib/components/InlineFilePreview.svelte";
+  import ResultsList from "#lib/components/ResultsList.svelte";
+  import SearchPanel from "#lib/components/SearchPanel.svelte";
   import {
     CommandDialog,
     CommandEmpty,
@@ -10,7 +10,7 @@
     CommandInput,
     CommandItem,
     CommandList,
-  } from "$lib/components/ui/command";
+  } from "#lib/components/ui/command/index.js";
   import {
     Menubar,
     MenubarContent,
@@ -18,13 +18,13 @@
     MenubarMenu,
     MenubarSeparator,
     MenubarTrigger,
-  } from "$lib/components/ui/menubar";
-  import { ResizableHandle, ResizablePane, ResizablePaneGroup } from "$lib/components/ui/resizable";
-  import { FILE_FILTERS, MAX_RESULTS } from "$lib/constants";
-  import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "$lib/search";
-  import { with_current } from "$lib/search-events";
-  import { debounce } from "$lib/utils";
-  import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
+  } from "#lib/components/ui/menubar/index.js";
+  import { ResizableHandle, ResizablePane, ResizablePaneGroup } from "#lib/components/ui/resizable/index.js";
+  import { FILE_FILTERS, MAX_RESULTS } from "#lib/constants.js";
+  import { fetch_file, get_data_root, list_directories, search as search_api, set_data_root } from "#lib/search.js";
+  import { with_current } from "#lib/search-events.js";
+  import { debounce } from "#lib/utils.js";
+  import { Select, SelectContent, SelectItem, SelectTrigger } from "#lib/components/ui/select/index.js";
   import type { UnlistenFn } from "@tauri-apps/api/event";
   import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
@@ -32,10 +32,10 @@
   import { resetMode, setMode, userPrefersMode } from "mode-watcher";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
-  import logo_url from "$lib/assets/logo.svg";
-  import { apply_locale, locale as locale_store, available_locales, format_number } from "$lib/stores/locale";
+  import logo_url from "#lib/assets/logo.svg";
+  import { apply_locale, locale as locale_store, available_locales, format_number } from "#lib/stores/locale.js";
 
-  import type { SearchCompletePayload, SearchErrorPayload, SearchMatchPayload, SearchStartedPayload } from "$lib/types";
+  import type { SearchCompletePayload, SearchErrorPayload, SearchMatchPayload, SearchStartedPayload } from "#lib/types.js";
 
   let data_root = $state("");
   let directories = $state<string[]>([]);

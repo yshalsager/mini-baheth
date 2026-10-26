@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Label } from '$lib/components/ui/label'
-  import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '$lib/components/ui/dropdown-menu'
+  import { Label } from '#lib/components/ui/label/index.js'
+  import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '#lib/components/ui/dropdown-menu/index.js'
 
   let {
     file_filters = $bindable<string[]>([]),

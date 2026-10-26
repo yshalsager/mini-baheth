@@ -1,5 +1,5 @@
 import { pyInvoke } from 'tauri-plugin-pytauri-api'
-import type { DirectoriesResponse, FileResponse } from '$lib/types'
+import type { DirectoriesResponse, FileResponse } from '#lib/types.js'
 
 export function get_data_root() {
   return pyInvoke<string>('get_data_root', {})

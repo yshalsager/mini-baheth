@@ -13,6 +13,7 @@ dist-ssr
 *.local
 src/locales/.wuchale
 src/locales/data.js
+src/locales/plural.js
 
 # Editor directories and files
 .vscode/*

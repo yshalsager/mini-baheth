@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "$lib/components/ui/dialog";
-  import { Button } from "$lib/components/ui/button";
-  import FilePreviewContent from "$lib/components/FilePreviewContent.svelte";
+  import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "#lib/components/ui/dialog/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import FilePreviewContent from "#lib/components/FilePreviewContent.svelte";
 
   let {
     open = $bindable(false),

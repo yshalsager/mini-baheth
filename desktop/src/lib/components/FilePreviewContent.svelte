@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { ScrollArea } from "$lib/components/ui/scroll-area"
-  import { Button } from "$lib/components/ui/button"
-  import { infinite_scroll } from "$lib/attachments"
+  import { ScrollArea } from "#lib/components/ui/scroll-area/index.js"
+  import { Button } from "#lib/components/ui/button/index.js"
+  import { infinite_scroll } from "#lib/attachments.js"
   import { tick } from "svelte"
   import Copy from "@lucide/svelte/icons/copy"
 

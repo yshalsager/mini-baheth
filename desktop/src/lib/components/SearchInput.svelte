@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Input } from '$lib/components/ui/input'
-  import { Label } from '$lib/components/ui/label'
-  import { Button } from '$lib/components/ui/button'
-  import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select'
+  import { Input } from '#lib/components/ui/input/index.js'
+  import { Label } from '#lib/components/ui/label/index.js'
+  import { Button } from '#lib/components/ui/button/index.js'
+  import { Select, SelectContent, SelectItem, SelectTrigger } from '#lib/components/ui/select/index.js'
   import XIcon from '@lucide/svelte/icons/x'
 
   let {

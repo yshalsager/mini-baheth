@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { infinite_scroll } from "$lib/attachments";
-  import { Button } from "$lib/components/ui/button";
+  import { infinite_scroll } from "#lib/attachments.js";
+  import { Button } from "#lib/components/ui/button/index.js";
   import {
     ContextMenu,
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuSeparator,
     ContextMenuTrigger,
-  } from "$lib/components/ui/context-menu";
+  } from "#lib/components/ui/context-menu/index.js";
   import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "$lib/components/ui/dropdown-menu";
-  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
-  import { RESULTS_PER_PAGE } from "$lib/constants";
-  import type { SearchMatchPayload, Submatch } from "$lib/types";
+  } from "#lib/components/ui/dropdown-menu/index.js";
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "#lib/components/ui/table/index.js";
+  import { RESULTS_PER_PAGE } from "#lib/constants.js";
+  import type { SearchMatchPayload, Submatch } from "#lib/types.js";
   import LocateFixed from "@lucide/svelte/icons/locate-fixed";
   import MoreHorizontal from "@lucide/svelte/icons/more-horizontal";
   import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";

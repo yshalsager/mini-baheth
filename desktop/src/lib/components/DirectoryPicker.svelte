@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { Label } from "#lib/components/ui/label/index.js";
+  import { Select, SelectContent, SelectItem, SelectTrigger } from "#lib/components/ui/select/index.js";
 
   let {
     directory_search = $bindable(""),

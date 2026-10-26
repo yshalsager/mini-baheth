@@ -1,4 +1,4 @@
-import { browser } from '$app/environment'
+import { browser } from '$app/env'
 import { derived, get, writable } from 'svelte/store'
 import { loadLocale } from 'wuchale/load-utils'
 import { locales as supported_locales } from '../../locales/data.js'
@@ -24,7 +24,7 @@ locale.subscribe(value => {
 })
 
 function is_valid_locale(value: string | null | undefined): value is string {
-  return typeof value === 'string' && supported_locales.includes(value)
+  return typeof value === 'string' && supported_locales.some(locale => locale === value)
 }
 
 export async function apply_locale(new_locale: string) {
