@@ -1,6 +1,6 @@
 [tools]
 rust = "1.99.1"
-node = "24"
+node = "26"
 "aqua:pnpm/pnpm" = 'latest'
 
 [tasks.prep]
